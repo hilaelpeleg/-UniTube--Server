@@ -13,7 +13,7 @@ const Video = new Schema({
         required: true,
     },
     description: {
-        type: String, 
+        type: String,
         required: true,
     },
     url: {
@@ -33,7 +33,7 @@ const Video = new Schema({
         default: 0,
     },
     comments: {
-        type: [String], 
+        type: [String],
         default: [],
     },
     uploadDate: {
