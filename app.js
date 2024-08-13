@@ -1,13 +1,26 @@
+import customENV from 'custom-env';
 import express from 'express';
 import bodyParser from 'body-parser';
-import { router } from './routs/user.js';
+import mongoose from 'mongoose';
+import userRouter from './routes/user.js';
+import videosRouter from './routes/video.js';
+
+// Load environment variables based on the current environment
+customENV.env(process.env.NODE_ENV, "./config");
 
 const server = express();
-server.use(bodyParser());
-server.set('view engin', 'ejs');
 
-app.use('/', router);
+// Body Parser Middleware
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(bodyParser.json());
 
+server.set('view engine', 'ejs');
+
+// Routes
+server.use('/', userRouter);
+server.use('/api/videos', videosRouter);
+
+// Connect to MongoDB
 mongoose.connect(process.env.CONNECTION_STRING)
 .then(() => {
     console.log('Connected to MongoDB');
@@ -15,4 +28,8 @@ mongoose.connect(process.env.CONNECTION_STRING)
     console.error('Error connecting to MongoDB:', error.message);
 });
 
-server.listen(8080);
+// Start the server
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

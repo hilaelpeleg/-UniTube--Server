@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const User = new Schema({
+const userSchema = new Schema({
     user_name: {
         type: String,
         required: true,
@@ -27,11 +27,12 @@ const User = new Schema({
         type: String,
         required: true,
     },
-    videos: [
-        
-    ]
+    videos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Video'
+    }]
 });
 
+const User = mongoose.model("User", userSchema);
 
-
-module.exports = mongoose.model("User", User);
+export default User;

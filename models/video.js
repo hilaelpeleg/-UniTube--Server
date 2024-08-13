@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const Video = new Schema({
+const videoSchema = new Schema({
     id: {
         type: Number,
         required: true,
@@ -50,5 +50,6 @@ const Video = new Schema({
     },
 });
 
+const Video = mongoose.model("Video", videoSchema);
 
-module.exports = mongoose.model("User", User);
+export default Video;
