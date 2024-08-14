@@ -32,12 +32,12 @@ const videoSchema = new Schema({
         type: Number,
         default: 0,
     },
-    comments: {
-        type: [String],
-        default: [],
-    },
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
+    }],
     uploadDate: {
-        type: Date,
+        type: String,
         default: Date.now,
     },
     duration: {
