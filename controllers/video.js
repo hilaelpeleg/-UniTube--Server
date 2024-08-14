@@ -3,6 +3,7 @@ import videoServices from '../services/video.js';
 export async function getVideos(req, res) {
     try {
         const videos = await videoServices.getAllVideos();
+        console.log("Videos fetched: ", videos); 
         res.json(videos);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch videos' });
