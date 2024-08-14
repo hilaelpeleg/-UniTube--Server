@@ -48,6 +48,7 @@ const videoSchema = new Schema({
         type: String,
         default: null,
     },
+    
 });
 
 const Video = mongoose.model('Video', videoSchema, 'videos');
