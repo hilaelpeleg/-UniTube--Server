@@ -25,19 +25,19 @@ server.use('/api/videos', videosRouter);
 
 // Connect to MongoDB
 
-mongoose.connect(process.env.CONNECTION_STRING, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => {
-    console.log('Connected to MongoDB');
-})
-.catch((error) => {
-    console.error('Error connecting to MongoDB:', error.message);
-});
+mongoose.connect(process.env.CONNECTION_STRING)
+    .then(() => {
+        // Start the server
+        const PORT = process.env.PORT || 8080;
+        server.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+        console.log('Connected to MongoDB');
+    })
+    .catch((error) => {
+        console.error('Error connecting to MongoDB:', error.message);
+    });
 
-// Start the server
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+
+
+
