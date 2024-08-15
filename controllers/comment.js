@@ -46,5 +46,5 @@ export default {
     getComments,
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
 };

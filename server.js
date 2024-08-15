@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import userRouter from './routes/user.js';
 import videosRouter from './routes/video.js';
+import commentsRouter from './routes/comment.js';
 import cors from 'cors';
 import { initializeDatabase } from './initializeDatabase.js';
 
@@ -29,6 +30,8 @@ server.set('view engine', 'ejs');
 // Routes
 server.use('/', userRouter);
 server.use('/api/videos', videosRouter);
+server.use('/api/comments', commentsRouter);
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.CONNECTION_STRING)
