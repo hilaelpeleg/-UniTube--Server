@@ -1,5 +1,6 @@
 import Comment from '../models/comment.js'
 
+
 export async function getCommentsByVideoId(videoId) {
     try {
         return await Comment.find({ videoId: videoId });
