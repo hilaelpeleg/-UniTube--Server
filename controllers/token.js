@@ -1,14 +1,20 @@
-import * as userService from '../services/user.js';
-import * as tokenModel from '../models/token.js';
+import * as userService from '../services/userService.js';
+import { generateToken } from '../models/tokenModel.js';
 
-// Handle login and token generation
+// Process login and return a token
 export async function processLogin(req, res) {
     const { userName, password } = req.body;
-    
-    if (await userService.isSigned(userName, password)) {
-        const token = tokenModel.getToken({ username: userName });
-        return res.status(201).json({ token });
+    const user = await userService.getUser(userName);
+
+    // If user exists and the password matches
+    if (user && user.password === password) {  // Simple password check (improve by hashing passwords)
+        const token = generateToken(user);  // Generate JWT token for the user
+        res.status(200).json({ token });  // Send the token as response
     } else {
-        return res.status(401).json({ error: 'Invalid username or password' });
+        res.status(404).json({ error: 'Invalid username or password' });
     }
 }
+
+export default {
+    processLogin
+};
