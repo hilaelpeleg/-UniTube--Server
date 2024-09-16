@@ -4,7 +4,7 @@ const key = 'secretpassphrase';
 // Generate a token for the user
 export function getToken(user) {
     const data = { username: user.username };
-    const token = jwt.sign(data, key, { expiresIn: '1h' }); // Token expires in 1 hour
+    const token = jwt.sign(data, key); // No expiration time set
     return token;
 }
 

@@ -1,4 +1,4 @@
-import User from '../models/user.js'; // Assuming you have a User model (mongoose or any other ORM)
+import User from '../models/user.js'; 
 
 // Check if the user exists and the password is correct
 export async function isSigned(userName, password) {
