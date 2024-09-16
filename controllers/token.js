@@ -1,5 +1,5 @@
 import * as userService from '../services/userService.js';
-import { generateToken } from '../models/tokenModel.js';
+import { generateToken } from '../models/token.js';
 
 // Process login and return a token
 export async function processLogin(req, res) {

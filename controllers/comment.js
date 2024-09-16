@@ -1,4 +1,4 @@
-import commentServices from '../services/comments.js';
+import commentServices from '../services/comment.js';
 
 export async function getComments(req, res) {
     try {

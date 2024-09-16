@@ -1,5 +1,5 @@
 import express from 'express';
-import { processLogin } from '../controllers/TokenController.js';
+import { processLogin } from '../controllers/token.js';
 
 const router = express.Router();
 
