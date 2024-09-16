@@ -2,10 +2,11 @@ import customENV from 'custom-env';
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import userRouter from './routes/user.js';
+import cors from 'cors';
 import videosRouter from './routes/video.js';
 import commentsRouter from './routes/comment.js';
-import cors from 'cors';
+import userRouter from './routes/user.js';
+import tokensRouter from './routes/token.js'; // הראוטר של token
 import { initializeDatabase } from './initializeDatabase.js';
 
 // Set the environment explicitly if not already set
@@ -28,10 +29,10 @@ server.use(bodyParser.json());
 server.set('view engine', 'ejs');
 
 // Routes
-server.use('/', userRouter);
+server.use("/api/users", userRouter);
+server.use("/api/tokens", tokensRouter);
 server.use('/api/videos', videosRouter);
 server.use('/api/comments', commentsRouter);
-
 
 // Connect to MongoDB
 mongoose.connect(process.env.CONNECTION_STRING)
