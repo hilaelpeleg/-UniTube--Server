@@ -3,6 +3,7 @@ import { generateToken } from '../models/token.js';
 
 // Process login and return a token
 export async function processLogin(req, res) {
+    console.log("Attempting to process login:", req.body);
     const { userName, password } = req.body;
     const user = await userService.getUser(userName);
 

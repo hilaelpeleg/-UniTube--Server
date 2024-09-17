@@ -4,7 +4,7 @@ export async function getVideos(req, res) {
     console.log("getVideos function called");
     try {
         const videos = await videoServices.getAllVideos();
-        console.log("Videos fetched:!!!!! ", videos); 
+        // console.log("Videos fetched:!!!!! ", videos); 
         res.json(videos);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch videos' });

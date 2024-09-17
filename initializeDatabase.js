@@ -25,7 +25,6 @@ export async function initializeDatabase() {
                     const savedVideo = await video.save();
                     uploader.videos.push(savedVideo._id); // Add the video to the user's video list
                     await uploader.save();
-                    //console.log(`Inserted video: ${savedVideo.title}`);
                 }
             }
         }
@@ -42,7 +41,6 @@ export async function initializeDatabase() {
                     const savedComment = await comment.save();
                     video.comments.push(savedComment._id); // Add the comment to the video's comment list
                     await video.save();
-                    //console.log(`Inserted comment by: ${savedComment.name}`);
                 }
             }
         }

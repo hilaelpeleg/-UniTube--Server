@@ -29,8 +29,8 @@ server.use(bodyParser.json());
 server.set('view engine', 'ejs');
 
 // Routes
-server.use("/api/users", userRouter);
-server.use("/api/tokens", tokensRouter);
+server.use('/api/users', userRouter);
+server.use('/api/tokens', tokensRouter);
 server.use('/api/videos', videosRouter);
 server.use('/api/comments', commentsRouter);
 

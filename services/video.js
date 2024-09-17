@@ -120,7 +120,7 @@ export async function getUserVideos(user_name) {
 export async function getAllVideos() {
     try {
         const videos = await Video.find({});
-        console.log("Videos from MongoDB: ", videos);
+        // console.log("Videos from MongoDB: ", videos);
         return videos;
     } catch (error) {
         console.error("Error fetching videos:", error);

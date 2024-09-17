@@ -11,7 +11,7 @@ export async function getAllUsers(req, res) {
 
 export async function getUser(req, res) {
     try {
-        const user = await userService.getUser(req.query.userName);
+        const user = await userService.getUser(req.params.userName);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
