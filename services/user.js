@@ -9,13 +9,12 @@ export async function getUser(userName) {
 }
 
 
-export async function createUser(userName, firstName, lastName, password, reEnterPassword, profilePicture) {
+export async function createUser(userName, firstName, lastName, password, profilePicture) {
     const newUser = new User({
         user_name: userName,
         first_name: firstName,
         last_name: lastName,
         password: password,
-        reEnterPassword: reEnterPassword,
         profilePicture: profilePicture
     });
     return await newUser.save();
