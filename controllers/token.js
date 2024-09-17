@@ -5,7 +5,10 @@ import { generateToken } from '../models/token.js';
 export async function processLogin(req, res) {
     console.log("Attempting to process login:", req.body);
     const { userName, password } = req.body;
+    console.log(userName);
     const user = await userService.getUser(userName);
+    console.log("Attempting to getuser", user);
+
 
     // If user exists and the password matches
     if (user && user.password === password) {  // Simple password check (improve by hashing passwords)

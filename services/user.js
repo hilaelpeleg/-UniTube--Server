@@ -5,15 +5,15 @@ export async function getUsers() {
 }
 
 export async function getUser(userName) {
-    return await User.findOne({ user_name: userName });
+    return await User.findOne({userName: userName});
 }
 
 
 export async function createUser(userName, firstName, lastName, password, profilePicture) {
     const newUser = new User({
-        user_name: userName,
-        first_name: firstName,
-        last_name: lastName,
+        userName: userName,
+        firstName: firstName,
+        lastName: lastName,
         password: password,
         profilePicture: profilePicture
     });
