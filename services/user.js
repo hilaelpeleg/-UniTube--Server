@@ -8,6 +8,7 @@ export async function getUser(userName) {
     return await User.findOne({ user_name: userName });
 }
 
+
 export async function createUser(userName, firstName, lastName, password, reEnterPassword, profilePicture) {
     const newUser = new User({
         user_name: userName,
@@ -20,8 +21,14 @@ export async function createUser(userName, firstName, lastName, password, reEnte
     return await newUser.save();
 }
 
+// Delete a user by username
+export async function deleteUser(userName) {
+    return await User.findOneAndDelete({ user_name: userName });
+}
+
 export default {
     getUsers,
     getUser,
-    createUser
+    createUser,
+    deleteUser
 };
