@@ -24,7 +24,15 @@ export async function getUser(req, res) {
 export async function createUser(req, res) {
     try {
         const { userName, firstName, lastName, password, profilePicture } = req.body;
+
+        // check if the userName already exist
+        const userExists = await userService.checkUserNameExists(userName);
+        if (userExists) {
+            return res.status(409).json({ error: 'User name already exists' });
+        }
+
         const newUser = await userService.createUser(userName, firstName, lastName, password, profilePicture);
+
         res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create user' });
