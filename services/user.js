@@ -22,7 +22,7 @@ export async function createUser(userName, firstName, lastName, password, profil
 
 // Delete a user by username
 export async function deleteUser(userName) {
-    return await User.findOneAndDelete({ user_name: userName });
+    return await User.findOneAndDelete({ userName: userName });
 }
 
 export default {
