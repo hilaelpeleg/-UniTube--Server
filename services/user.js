@@ -1,9 +1,5 @@
 import User from '../models/user.js';
 
-export async function getUsers() {
-    return await User.find({});
-}
-
 export async function getUser(userName) {
     return await User.findOne({userName: userName});
 }
@@ -38,7 +34,6 @@ export async function updateUser(userName, firstName, lastName, password, profil
     }
 }
 export default {
-    getUsers,
     getUser,
     createUser,
     deleteUser,

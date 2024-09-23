@@ -1,14 +1,5 @@
 import * as userService from '../services/user.js';
 
-export async function getAllUsers(req, res) {
-    try {
-        const users = await userService.getUsers();
-        res.render('../views/user', { users });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-}
-
 export async function getUser(req, res) {
     try {
         const user = await userService.getUser(req.params.userName);
@@ -63,7 +54,6 @@ export async function updateUser(req, res) {
 }
 
 export default {
-    getAllUsers,
     getUser,
     createUser,
     deleteUser,
