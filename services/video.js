@@ -28,11 +28,11 @@ export async function createVideo(userName, title, description, url, thumbnailUr
     }
 }
 
-export async function addVideo(user_name, video) {
+export async function addVideo(userName, video) {
     try {
-        const user = await User.findOne({ user_name });
+        const user = await User.findOne({ userName });
         if (user) {
-            user.videos.push(video._id);
+            user.videos.push(video.id);
             await user.save();
             return true;
         }
@@ -76,10 +76,10 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
-export async function editVideo(user_name, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
+export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
     try {
         const video = await Video.findById(videoId);
-        if (!video || video.user_name !== user_name) {
+        if (!video || video.userName !== userName) {
             return { code: 404, error: "Video not found!" };
         }
 

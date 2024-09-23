@@ -1,5 +1,6 @@
 import express from 'express';
 import { getComments, createComment, updateComment, deleteComment } from '../controllers/comment.js';
+import validateToken from '../models/token.js';
 
 const router = express.Router();
 
@@ -7,12 +8,12 @@ const router = express.Router();
 router.get('/:id', getComments);
 
 // Add a new comment to a specific video
-router.post('/:id', createComment);
+router.post('/:id', validateToken, createComment);
 
 // Edit a comment by its ID
-router.put('/:id', updateComment);
+router.put('/:id', validateToken, updateComment);
 
 // Delete a comment by its ID
-router.delete('/:id', deleteComment);
+router.delete('/:id', validateToken, deleteComment);
 
 export default router;
