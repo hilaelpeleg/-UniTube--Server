@@ -54,19 +54,33 @@ export async function removeVideo(user_name, videoId) {
     }
 }
 
-export async function deleteVideo(user_name, videoId) {
+export async function deleteVideo(userName, videoId) {
     try {
+        // Find the video by its ID and populate the comments
         const video = await Video.findById(videoId).populate('comments');
-        if (video && video.user_name == user_name) {
-            await Video.findOneAndDelete({ _id: videoId });
-            const commentIds = video.comments.map(comment => comment._id);
-            await Comment.deleteMany({ _id: { $in: commentIds } });
-            return removeVideo(user_name, videoId);
+
+        // Check if the video exists
+        if (!video) {
+            return false; // Video not found
         }
-        return false;
+
+        // Check if the logged-in user is the one who uploaded the video
+        if (video.uploader === userName) {
+            // Delete the video
+            await Video.findByIdAndDelete(videoId);
+
+            // Get the IDs of the comments associated with the video
+            const commentIds = video.comments.map(comment => comment._id);
+
+            // Delete all comments associated with the video
+            await Comment.deleteMany({ _id: { $in: commentIds } });
+            return true; // Deletion successful
+        }
+
+        return false; // User is not authorized to delete the video
     } catch (error) {
-        console.log(error);
-        return false;
+        console.error("Error deleting video:", error);
+        return false; // Deletion failed
     }
 }
 
