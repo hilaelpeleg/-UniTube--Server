@@ -28,20 +28,6 @@ export async function createVideo(userName, title, description, url, thumbnailUr
     }
 }
 
-export async function addVideo(user_name, video) {
-    try {
-        const user = await User.findOne({ user_name });
-        if (user) {
-            user.videos.push(video._id);
-            await user.save();
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-}
-
 export async function deleteVideo(userName, videoId) {
     try {
         // Convert the videoId to a Number
@@ -142,8 +128,6 @@ export async function getAllVideos() {
 export default {
     getAllVideos,
     createVideo,
-    addVideo,
-    removeVideo,
     deleteVideo,
     editVideo,
     getVideoById,
