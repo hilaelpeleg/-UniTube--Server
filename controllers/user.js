@@ -22,7 +22,6 @@ export async function createUser(req, res) {
     }
 }
 
-// Delete a user by username
 export async function deleteUser(req, res) {
     try {
         const userName = req.params.userName; // assuming the username is passed as a URL parameter
@@ -38,9 +37,9 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const { userName } = req.params; // נניח שהמשתמש מזוהה לפי userName
-        const { firstName, lastName, password, profilePicture } = req.body; // נתונים שניתן לעדכן
-
+        const { userName } = req.params; // Extract the userName from the request parameters
+        // Extract the fields that can be updated from the request body
+        const { firstName, lastName, password, profilePicture } = req.body; 
         const updatedUser = await userService.updateUser(userName, firstName, lastName, password, profilePicture);
 
         if (!updatedUser) {

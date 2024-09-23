@@ -81,29 +81,6 @@ export async function deleteVideo(req, res) {
     }
 }
 
-export async function addCommentToVideo(videoId, commentData) {
-    try {
-        const video = await Video.findOne({ id: videoId });
-        if (!video) {
-            throw new Error('Video not found');
-        }
-
-        const newCommentId = video.comments.length + 1; // יצירת id חדש לתגובה
-        const newComment = {
-            id: newCommentId,
-            ...commentData
-        };
-
-        video.comments.push(newComment);
-        await video.save();
-
-        return video;
-    } catch (error) {
-        console.error("Error adding comment:", error);
-        throw error;
-    }
-}
-
 export default {
     getVideos,
     getVideoById,
@@ -111,5 +88,4 @@ export default {
     editVideo,
     createVideo,
     deleteVideo,
-    addCommentToVideo,
 };
