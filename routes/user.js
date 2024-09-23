@@ -5,11 +5,9 @@ import { validateToken } from '../models/token.js';
 
 const router = express.Router();
 
-// router.get('/user', userController.getUser);
-router.get('/users', userController.getAllUsers);
-router.post('/user',userController.createUser);
-router.delete('/:userName', userController.deleteUser);
-router.get('/:userName',userController.getUser);
+router.get('/:id',userController.getUser);
+router.put('/:id',userController.);
+router.delete('/:id', userController.deleteUser);
 router.delete('/:id/videos/:pid', validateToken, videoController.deleteVideo);
 
 
