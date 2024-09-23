@@ -1,14 +1,15 @@
 import Video from '../models/video.js';
 import User from '../models/user.js';
+import Comment from '../models/comment.js';
 
-export async function createVideo(user_name, title, description, url, thumbnailUrl, uploadDate, duration) {
+export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
     try {
         const lastVideo = await Video.findOne().sort({ id: -1 });
         const newId = lastVideo ? lastVideo.id + 1 : 1;
 
         let video = new Video({
             id: newId,
-            user_name, 
+            userName, 
             title, 
             description, 
             url, 
@@ -17,7 +18,7 @@ export async function createVideo(user_name, title, description, url, thumbnailU
             duration
         });
 
-        if (await addVideo(user_name, video)) {
+        if (await addVideo(userName, video)) {
             return await video.save();
         }
         return null;
@@ -56,33 +57,38 @@ export async function removeVideo(user_name, videoId) {
 
 export async function deleteVideo(userName, videoId) {
     try {
-        // Find the video by its ID and populate the comments
-        const video = await Video.findById(videoId).populate('comments');
+        // Convert the videoId to a Number
+        const numericVideoId = Number(videoId); // Ensure videoId is a number
+
+        // Find the video by its numeric ID
+        const video = await Video.findOne({ id: numericVideoId }).populate('comments');
 
         // Check if the video exists
         if (!video) {
             return false; // Video not found
         }
 
-        // Check if the logged-in user is the one who uploaded the video
-        if (video.uploader === userName) {
-            // Delete the video
-            await Video.findByIdAndDelete(videoId);
-
-            // Get the IDs of the comments associated with the video
-            const commentIds = video.comments.map(comment => comment._id);
-
-            // Delete all comments associated with the video
-            await Comment.deleteMany({ _id: { $in: commentIds } });
-            return true; // Deletion successful
+        // Ensure the logged-in user is the uploader
+        if (video.uploader !== userName) {
+            return false; // User is not authorized to delete this video
         }
 
-        return false; // User is not authorized to delete the video
+        // Delete the video by its numeric ID
+        await Video.findOneAndDelete({ id: numericVideoId });
+
+        // Get the IDs of the comments associated with the video
+        const commentIds = video.comments.map(comment => comment._id);
+
+        // Delete all comments associated with the video
+        await Comment.deleteMany({ _id: { $in: commentIds } });
+
+        return true; // Deletion successful
     } catch (error) {
-        console.error("Error deleting video:", error);
+        console.error('Error deleting video:', error);
         return false; // Deletion failed
     }
 }
+
 
 export async function editVideo(user_name, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
     try {

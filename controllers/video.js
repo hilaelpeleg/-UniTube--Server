@@ -1,10 +1,8 @@
 import videoServices from '../services/video.js';
 
 export async function getVideos(req, res) {
-    console.log("getVideos function called");
     try {
         const videos = await videoServices.getAllVideos();
-        // console.log("Videos fetched:!!!!! ", videos); 
         res.json(videos);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch videos' });
@@ -58,12 +56,25 @@ export async function createVideo(req, res) {
 
 export async function deleteVideo(req, res) {
     try {
-        const success = await videoServices.deleteVideo(req.params.user_name, req.params.videoId);
-        if (!success) {
-            return res.status(404).json({ error: 'Video not found or failed to delete' });
+        // Extract userName from the validated token (assuming validateToken middleware was used)
+        const loggedInUser = req.user.userName;
+        const { id, pid } = req.params;
+
+        // Ensure that the logged-in user is the one who uploaded the video
+        if (loggedInUser !== id) {
+            console.log(id);
+            return res.status(403).json({ error: 'You are not authorized to delete this video' });
         }
+
+        // Call the service to delete the video
+        const success = await videoServices.deleteVideo(id, pid);
+        if (!success) {
+            return res.status(404).json({ error: 'Video not found or you are not authorized to delete it' });
+        }
+
         res.status(200).json({ message: 'Video deleted successfully' });
     } catch (error) {
+        console.error('Error deleting video:', error);
         res.status(500).json({ error: 'Failed to delete video' });
     }
 }
