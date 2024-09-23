@@ -23,9 +23,11 @@ export async function getVideoById(req, res) {
 
 export async function getUserVideos(req, res) {
     try {
-        const videos = await videoServices.getUserVideos(req.params.user_name);
-        res.json(videos);
+        // Call the service to get videos by uploader's name
+        const videos = await videoServices.getUserVideos(req.params.userName);
+        res.json(videos); // Send back the videos in the response
     } catch (error) {
+        // Handle errors and send back a failure response
         res.status(500).json({ error: 'Failed to fetch user videos' });
     }
 }

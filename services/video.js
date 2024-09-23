@@ -123,15 +123,20 @@ export async function getVideoById(videoId) {
     }
 }
 
-export async function getUserVideos(user_name) {
+export async function getUserVideos(userName) {
     try {
-        const user = await User.findOne({ user_name }).populate('videos');
+        // Find the user by username and populate their videos
+        const user = await User.findOne({ userName }).populate('videos');
+        
+        // If the user is not found, return a 404 error
         if (!user) {
             return { code: 404, error: "User not found!" };
         }
 
+        // Return the user's videos
         return user.videos;
     } catch (error) {
+        // Log the error and return a 500 internal server error
         console.error("Error fetching user videos:", error);
         return { code: 500, error: "Failed to fetch user videos" };
     }
