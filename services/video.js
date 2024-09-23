@@ -42,19 +42,6 @@ export async function addVideo(user_name, video) {
     }
 }
 
-export async function removeVideo(user_name, videoId) {
-    try {
-        await User.updateOne(
-            { user_name },
-            { $pull: { videos: videoId } }
-        );
-        return true;
-    } catch (error) {
-        console.log(error);
-        return false;
-    }
-}
-
 export async function deleteVideo(userName, videoId) {
     try {
         // Convert the videoId to a Number
@@ -88,7 +75,6 @@ export async function deleteVideo(userName, videoId) {
         return false; // Deletion failed
     }
 }
-
 
 export async function editVideo(user_name, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
     try {
