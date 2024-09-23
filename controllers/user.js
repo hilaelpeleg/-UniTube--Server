@@ -53,9 +53,28 @@ export async function deleteUser(req, res) {
     }
 }
 
+// Update a user by username
+export async function updateUser(req, res) {
+    try {
+        const userName = req.body.userName;
+        const updatedData = req.body;
+
+        const updatedUser = await userService.updateUser(userName, updatedData);
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+}
+
 export default {
     getAllUsers,
     getUser,
     createUser,
-    deleteUser
+    deleteUser,
+    updateUser 
 };

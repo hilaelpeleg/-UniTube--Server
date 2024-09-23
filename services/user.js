@@ -30,10 +30,21 @@ export async function deleteUser(userName) {
     return await User.findOneAndDelete({ userName: userName });
 }
 
+// Update a user by username
+export async function updateUser(userName, updatedData) {
+    const user = await User.findOneAndUpdate({ userName: userName }, updatedData, {
+        new: true, // Return the updated document
+        runValidators: true // Ensure schema validation runs on update
+    });
+
+    return user;
+}
+
 export default {
     getUsers,
     getUser,
     createUser,
     checkUserNameExists,
-    deleteUser
+    deleteUser,
+    updateUser
 };
