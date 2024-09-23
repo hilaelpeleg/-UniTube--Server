@@ -27,7 +27,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
 server.set('view engine', 'ejs');
-
+console.log('kkk');
 // Routes
 server.use('/api/users', userRouter);
 server.use('/api/tokens', tokensRouter);

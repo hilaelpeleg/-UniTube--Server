@@ -1,6 +1,7 @@
 import commentServices from '../services/comment.js';
 
 export async function getComments(req, res) {
+    console.log('comment controller');
     try {
         const comments = await commentServices.getCommentsByVideoId(req.params.videoId);
         res.json(comments);
