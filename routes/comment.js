@@ -1,6 +1,6 @@
 import express from 'express';
 import { getComments, createComment, updateComment, deleteComment } from '../controllers/comment.js';
-import validateToken from '../models/token.js';
+import { validateToken } from '../models/token.js';
 
 const router = express.Router();
 
