@@ -4,15 +4,15 @@ import { getComments, createComment, updateComment, deleteComment } from '../con
 const router = express.Router();
 
 // Get all comments for a specific video
-router.get('/:videoId', getComments);
+router.get('/:id', getComments);
 
 // Add a new comment to a specific video
-router.post('/:videoId', createComment);
+router.post('/:id', createComment);
 
 // Edit a comment by its ID
-router.put('/:commentId', updateComment);
+router.put('/:id', updateComment);
 
 // Delete a comment by its ID
-router.delete('/:commentId', deleteComment);
+router.delete('/:id', deleteComment);
 
 export default router;
