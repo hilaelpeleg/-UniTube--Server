@@ -1,13 +1,16 @@
 import express from 'express';
 import userController from '../controllers/user.js';
+import { validateToken } from '../models/token.js';
 
 const router = express.Router();
 
-// router.get('/user', userController.getUser);
-router.get('/users', userController.getAllUsers);
-router.post('/user',userController.createUser);
-router.delete('/:userName', userController.deleteUser);
-router.get('/:userName',userController.getUser);
-router.put('/:userName', userController.updateUser);
+router.post('/', userController.createUser);
+
+router.get('/:id',userController.getUser);
+router.put('/:id',validateToken, userController.updateUser);
+router.delete('/:id',validateToken, userController.deleteUser);
+
+
 
 export default router;
+ 
