@@ -2,7 +2,7 @@ import * as userService from '../services/user.js';
 
 export async function getUser(req, res) {
     try {
-        const user = await userService.getUser(req.params.userName);
+        const user = await userService.getUser(req.params.id);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -24,7 +24,7 @@ export async function createUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        const userName = req.params.userName; // assuming the username is passed as a URL parameter
+        const userName = req.params.id; 
         const user = await userService.deleteUser(userName);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });

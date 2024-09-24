@@ -2,7 +2,7 @@ import commentServices from '../services/comment.js';
 
 export async function getComments(req, res) {
     try {
-        const comments = await commentServices.getCommentsByVideoId(req.params.videoId);
+        const comments = await commentServices.getCommentsByVideoId(req.params.id);
         res.json(comments);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch comments' });
@@ -11,7 +11,7 @@ export async function getComments(req, res) {
 
 export async function createComment(req, res) {
     try {
-        const newComment = await commentServices.createComment(req.params.videoId, req.body);
+        const newComment = await commentServices.createComment(req.params.id, req.body);
         res.status(201).json(newComment);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create comment' });
