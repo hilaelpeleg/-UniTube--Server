@@ -21,6 +21,9 @@ console.log('Port:', process.env.PORT);
 
 const server = express();
 server.use(cors());
+server.use('/profiles', express.static('public/profiles'));
+server.use('/videos', express.static('public/videos'));
+
 
 // Body Parser Middleware
 server.use(bodyParser.urlencoded({ extended: true }));
