@@ -35,19 +35,6 @@ export async function updateUser(userName, updatedData) {
     return user;
 }
 
-export async function updateUser(userName, firstName, lastName, password, profilePicture) {
-    try {
-        const updatedUser = await User.findOneAndUpdate(
-            { userName },  // חיפוש לפי userName
-            { firstName, lastName, password, profilePicture },  // שדות לעדכון
-            { new: true }  // מחזיר את המסמך המעודכן
-        );
-
-        return updatedUser;
-    } catch (error) {
-        throw new Error('Failed to update user');
-    }
-}
 export default {
     getUser,
     createUser,
