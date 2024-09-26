@@ -1,6 +1,5 @@
 import * as userService from '../services/user.js';
 
-
 export async function getUser(req, res) {
     try {
         const user = await userService.getUser(req.params.id);
@@ -35,10 +34,9 @@ export async function createUser(req, res) {
     }
 }
 
-
 export async function deleteUser(req, res) {
     try {
-        const userName = req.params.id;
+        const userName = req.params.id; 
         const user = await userService.deleteUser(userName);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -74,16 +72,15 @@ export async function updateUser(req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        res.status(200).json({ message: 'User updated successfully', user: updatedUser }); // i added the massage. check if it works
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
     } catch (error) {
         res.status(500).json({ error: 'Failed to update user' });
     }
 }
 
-
 export default {
     getUser,
     createUser,
     deleteUser,
-    updateUser 
+    updateUser
 };

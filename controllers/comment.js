@@ -2,7 +2,7 @@ import commentServices from '../services/comment.js';
 
 export async function getComments(req, res) {
     try {
-        const comments = await commentServices.getCommentsByVideoId(req.params.videoId);
+        const comments = await commentServices.getCommentsByVideoId(req.params.id);
         res.json(comments);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch comments' });
@@ -11,7 +11,7 @@ export async function getComments(req, res) {
 
 export async function createComment(req, res) {
     try {
-        const newComment = await commentServices.createComment(req.params.videoId, req.body);
+        const newComment = await commentServices.createComment(req.params.id, req.body);
         res.status(201).json(newComment);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create comment' });
@@ -20,7 +20,7 @@ export async function createComment(req, res) {
 
 export async function updateComment(req, res) {
     try {
-        const updatedComment = await commentServices.updateComment(req.params.commentId, req.body);
+        const updatedComment = await commentServices.updateComment(req.params.id, req.body);
         if (!updatedComment) {
             return res.status(404).json({ error: 'Comment not found' });
         }
@@ -32,7 +32,7 @@ export async function updateComment(req, res) {
 
 export async function deleteComment(req, res) {
     try {
-        const success = await commentServices.deleteComment(req.params.commentId);
+        const success = await commentServices.deleteComment(req.params.id);
         if (!success) {
             return res.status(404).json({ error: 'Comment not found or failed to delete' });
         }

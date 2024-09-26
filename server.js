@@ -8,6 +8,7 @@ import commentsRouter from './routes/comment.js';
 import userRouter from './routes/user.js';
 import tokensRouter from './routes/token.js';
 import { initializeDatabase } from './initializeDatabase.js';
+import path from 'path';
 
 // Set the environment explicitly if not already set
 process.env.NODE_ENV = process.env.NODE_ENV || 'local';
@@ -20,14 +21,23 @@ console.log('Connection String:', process.env.CONNECTION_STRING);
 console.log('Port:', process.env.PORT);
 
 const server = express();
-server.use(cors());
+const corsOptions = {
+    origin: 'http://localhost:3000', // Allow requests only from the React app running on localhost:3000
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow all standard HTTP methods (GET, POST, PUT, DELETE, etc.)
+    credentials: true, // Allow sending cookies or authorization headers between the client and server
+    optionsSuccessStatus: 204 // Respond with status 204 for successful pre-flight requests (OPTIONS)
+};
 
-// Body Parser Middleware
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
+server.use(cors(corsOptions)); // Apply CORS rules with the defined options
+
+//showing files from public directory
+server.use(express.static("public"));
+
+// Adjust body parser limits
+server.use(bodyParser.json({ limit: '50mb' })); // Adjust limit for JSON data
+server.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Adjust limit for URL-encoded data
 
 server.set('view engine', 'ejs');
-
 // Routes
 server.use('/api/users', userRouter);
 server.use('/api/tokens', tokensRouter);
