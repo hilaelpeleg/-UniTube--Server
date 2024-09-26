@@ -33,9 +33,9 @@ server.use(cors(corsOptions)); // Apply CORS rules with the defined options
 //showing files from public directory
 server.use(express.static("public"));
 
-// Body Parser Middleware
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
+// Adjust body parser limits
+server.use(bodyParser.json({ limit: '50mb' })); // Adjust limit for JSON data
+server.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Adjust limit for URL-encoded data
 
 server.set('view engine', 'ejs');
 // Routes
