@@ -8,7 +8,8 @@ import commentsRouter from './routes/comment.js';
 import userRouter from './routes/user.js';
 import tokensRouter from './routes/token.js';
 import { initializeDatabase } from './initializeDatabase.js';
-import path from 'path';
+import multer from 'multer';
+
 
 // Set the environment explicitly if not already set
 process.env.NODE_ENV = process.env.NODE_ENV || 'local';
