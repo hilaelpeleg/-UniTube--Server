@@ -10,10 +10,7 @@ export function generateToken(user) {
 
 // Middleware to validate the token
 export function validateToken(req, res, next) {
-    console.log( req.headers.authorization);
-    console.log('yolo');
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-    console.log(token);
     if (token) {
         try {
             const data = jwt.verify(token, key); // Verify if the token is valid
