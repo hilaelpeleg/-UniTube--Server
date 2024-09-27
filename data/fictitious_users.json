@@ -9,9 +9,9 @@
     {
       "firstName": "Noa",
       "lastName": "Kirel",
-      "password": "12345",
+      "password": "12345678",
       "userName": "Noa Kirel",
-      "profilePicture": "profile_pic_noa_kirel"
+      "profilePicture": "https://www.eurovisionlive.com/wp-content/uploads/Israel-2023-Noa-Kirel-Eran-Levi.jpg"
     },
     {
       "firstName": "Lizzy",
@@ -61,6 +61,13 @@
       "password": "12345",
       "userName": "The Neighbourhood",
       "profilePicture": "profile_pic_the_neighbourhood"
+    },
+    {
+      "firstName": "Hila",
+      "lastName": "El Peleg",
+      "password": "12345678",
+      "userName": "Hila El peleg",
+      "profilePicture": "/profiles/hila.png"
     }
     
 ]

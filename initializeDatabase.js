@@ -2,49 +2,95 @@ import User from './models/user.js';
 import Video from './models/video.js';
 import Comment from './models/comment.js';
 import fs from 'fs';
+import path from 'path';
 
 export async function initializeDatabase() {
     try {
         // Check if the User collection is empty
         const userCount = await User.countDocuments();
+        console.log(`User collection contains ${userCount} documents`);
+
         if (userCount === 0) {
-            const users = JSON.parse(fs.readFileSync('./data/fictitious_users.json', 'utf-8'));
-            const createdUsers = await User.insertMany(users); // Insert initial users
-            console.log('Inserted initial users');
+            if (fs.existsSync('./data/fictitious_users.json')) {
+                // Read users from the JSON file
+                const users = JSON.parse(fs.readFileSync('./data/fictitious_users.json', 'utf-8'));
+                console.log(`Loaded ${users.length} users from JSON`);
+
+                // Set profile pictures to relative paths instead of Base64
+                for (let user of users) {
+                    const imagePath = `./public${user.profilePicture}`;
+
+                    if (fs.existsSync(imagePath)) {
+                        // Save the relative path to the profile picture in the database
+                        console.log(`Profile picture for ${user.userName} set successfully`);
+                    } else {
+                        console.error(`Image not found: ${imagePath}`);
+                    }
+                }
+                console.log('Inserted initial users with Base64 encoded profile pictures');
+            } else {
+                console.error('User JSON file not found');
+            }
         }
 
         // Check if the Video collection is empty
         const videoCount = await Video.countDocuments();
+        console.log(`Video collection contains ${videoCount} documents`);
+
         if (videoCount === 0) {
-            const videos = JSON.parse(fs.readFileSync('./data/fictious_videos.json', 'utf-8'));
-            for (let videoData of videos) {
-                const uploader = await User.findOne({ userName: videoData.uploader });
-                if (uploader) {
+            if (fs.existsSync('./data/fictious_videos.json')) {
+                // Read videos from the JSON file
+                const videos = JSON.parse(fs.readFileSync('./data/fictious_videos.json', 'utf-8'));
+                console.log(`Loaded ${videos.length} videos from JSON`);
+
+                // Just save the relative paths for videos
+                for (let videoData of videos) {
+                    const videoPath = `./public/${videoData.url}`;
+                    console.log(`Setting video path for ${videoData.uploader}: ${videoPath}`);
+
+                    if (fs.existsSync(videoPath)) {
+                        // Save only the relative path to the video in the database
+                        let relativeVideoPath = path.relative('./public', videoPath);
+
+                        // Ensure the path starts with a "/"
+                        if (!relativeVideoPath.startsWith('/')) {
+                            relativeVideoPath = `/${relativeVideoPath}`;
+                        }
+
+                        videoData.url = relativeVideoPath;
+                        console.log(`Video path for ${videoData.uploader} set successfully: ${relativeVideoPath}`);
+                    } else {
+                        console.error(`Video not found: ${videoPath}`);
+                    }
+
+                    // Save the video
                     const video = new Video(videoData);
-                    video.uploader = uploader._id; // Associate the uploader's ObjectId
-                    const savedVideo = await video.save();
-                    uploader.videos.push(savedVideo._id); // Add the video to the user's video list
-                    await uploader.save();
+                    await video.save();
+                    console.log(`Video by ${videoData.uploader} saved successfully!`);
                 }
+            } else {
+                console.error('Video JSON file not found');
             }
         }
 
         // Check if the Comment collection is empty
         const commentCount = await Comment.countDocuments();
+        console.log(`Comment collection contains ${commentCount} documents`);
+
         if (commentCount === 0) {
-            const comments = JSON.parse(fs.readFileSync('./data/fictious_comments.json', 'utf-8'));
-            for (let commentData of comments) {
-                const video = await Video.findOne({ id: commentData.videoId });
-                if (video) {
+            if (fs.existsSync('./data/fictious_comments.json')) {
+                // Read comments from the JSON file
+                const comments = JSON.parse(fs.readFileSync('./data/fictious_comments.json', 'utf-8'));
+
+                // Save comments in the database
+                for (let commentData of comments) {
                     const comment = new Comment(commentData);
-                    comment.videoId = video._id; // Associate the video's ObjectId
-                    const savedComment = await comment.save();
-                    video.comments.push(savedComment._id); // Add the comment to the video's comment list
-                    await video.save();
+                    await comment.save();
                 }
+            } else {
+                console.error('Comment JSON file not found');
             }
         }
-
     } catch (error) {
         console.error('Error during database initialization:', error);
     }
