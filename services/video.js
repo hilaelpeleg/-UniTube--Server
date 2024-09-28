@@ -2,43 +2,51 @@ import Video from '../models/video.js';
 import User from '../models/user.js';
 import Comment from '../models/comment.js';
 
+// export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
+//     try {
+//         const lastVideo = await Video.findOne().sort({ id: -1 });
+//         const newId = lastVideo ? lastVideo.id + 1 : 1;
+
+//         let video = new Video({
+//             id: newId,
+//             userName, 
+//             title, 
+//             description, 
+//             url, 
+//             thumbnailUrl, 
+//             uploadDate, 
+//             duration
+//         });
+
+//         if (await addVideo(userName, video)) {
+//             return await video.save();
+//         }
+//         return null;
+//     } catch (error) {
+//         console.error("Error creating video:", error);
+//         return null;
+//     }
+// }
+
 export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
     try {
-        const lastVideo = await Video.findOne().sort({ id: -1 });
-        const newId = lastVideo ? lastVideo.id + 1 : 1;
-
-        let video = new Video({
-            id: newId,
-            userName, 
-            title, 
-            description, 
-            url, 
-            thumbnailUrl, 
-            uploadDate, 
+        const newVideo = new Video({
+            userName,
+            title,
+            description,
+            url,
+            thumbnailUrl,
+            uploadDate,
             duration
         });
 
-        if (await addVideo(userName, video)) {
-            return await video.save();
-        }
-        return null;
+        // Save the video and update the user
+        const savedVideo = await newVideo.save();
+        await User.findOneAndUpdate({ userName }, { $push: { videos: savedVideo._id } });
+        return savedVideo;
     } catch (error) {
         console.error("Error creating video:", error);
         return null;
-    }
-}
-
-export async function addVideo(userName, video) {
-    try {
-        const user = await User.findOne({ userName });
-        if (user) {
-            user.videos.push(video.id);
-            await user.save();
-            return true;
-        }
-    } catch (error) {
-        console.log(error);
-        return false;
     }
 }
 
@@ -76,23 +84,22 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
-export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
+export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl) {
     try {
         const video = await Video.findById(videoId);
         if (!video || video.userName !== userName) {
-            return { code: 404, error: "Video not found!" };
+            return null; // Video not found or not authorized
         }
 
-        if (updatedTitle) video.title = updatedTitle;
-        if (updatedDescription) video.description = updatedDescription;
-        if (updatedVideoUrl) video.url = updatedVideoUrl;
-        if (updatedThumbnailUrl) video.thumbnailUrl = updatedThumbnailUrl;
+        video.title = updatedTitle || video.title;
+        video.description = updatedDescription || video.description;
+        video.url = updatedVideoUrl || video.url;
 
         await video.save();
         return video;
     } catch (error) {
         console.log(error);
-        return { code: 500, error: "Failed to update video" };
+        return null;
     }
 }
 
@@ -139,16 +146,6 @@ export async function getAllVideos() {
     }
 }
 
-// Service function to update video likes
-export const updateLikesById = async (videoId, newLikes) => {
-    try {
-        const video = await Video.findOneAndUpdate({ id: videoId }, { likes: newLikes }, { new: true }); // Update video likes
-        return video; // Return updated video
-    } catch (error) {
-        throw new Error('Could not update likes'); // Throw an error if update fails
-    }
-};
-
 export default {
     getAllVideos,
     createVideo,
@@ -157,5 +154,4 @@ export default {
     editVideo,
     getVideoById,
     getUserVideos,
-    updateLikesById
 };

@@ -1,5 +1,4 @@
 import videoServices from '../services/video.js';
-import { updateLikesById } from '../services/video.js';
 
 export async function getVideos(req, res) {
     try {
@@ -33,21 +32,29 @@ export async function getUserVideos(req, res) {
     }
 }
 
+// Edit video details
 export async function editVideo(req, res) {
     try {
-        const updatedVideo = await videoServices.editVideo(req.params.user_name, req.params.videoId, req.body.title, req.body.description, req.body.url, req.body.thumbnailUrl);
-        if (!updatedVideo) {
+        const { title, description } = req.body;
+        const video = await videoServices.editVideo(req.params.userName, req.params.videoId, title, description, req.file.path);
+        
+        if (!video) {
             return res.status(404).json({ error: 'Video not found or failed to update' });
         }
-        res.json(updatedVideo);
+        res.json(video);
     } catch (error) {
         res.status(500).json({ error: 'Failed to update video' });
     }
 }
 
+// Create a new video
 export async function createVideo(req, res) {
     try {
-        const video = await videoServices.createVideo(req.body.user_name, req.body.title, req.body.description, req.body.url, req.body.thumbnailUrl, req.body.uploadDate, req.body.duration);
+        const { userName, title, description, uploadDate, duration } = req.body;
+        const url = req.file.path; // Get the video file path from Multer
+        const thumbnailUrl = req.file.path; // Get the thumbnail file path from Multer
+        const video = await videoServices.createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration);
+        
         if (!video) {
             return res.status(400).json({ error: 'Failed to create video' });
         }
@@ -82,22 +89,6 @@ export async function deleteVideo(req, res) {
     }
 }
 
-export const updateVideoLikes = async (req, res) => {
-    const videoId = req.params.pid; // Get video ID from request parameters
-    const newLikes = req.body.likes; // Get new likes count from request body
-
-    try {
-        const updatedVideo = await updateLikesById(videoId, newLikes); // Call the service to update likes
-        if (!updatedVideo) {
-            return res.status(404).json({ error: 'Video not found' }); // Return 404 if video not found
-        }
-        res.json(updatedVideo); // Return the updated video
-    } catch (error) {
-        console.error('Error updating video likes:', error); // Log the error
-        res.status(500).json({ error: 'Could not update likes' }); // Return server error
-    }
-};
-
 export default {
     getVideos,
     getVideoById,
@@ -105,5 +96,4 @@ export default {
     editVideo,
     createVideo,
     deleteVideo,
-    updateVideoLikes
 };
