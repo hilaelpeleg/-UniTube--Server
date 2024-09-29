@@ -2,31 +2,6 @@ import Video from '../models/video.js';
 import User from '../models/user.js';
 import Comment from '../models/comment.js';
 
-// export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
-//     try {
-//         const lastVideo = await Video.findOne().sort({ id: -1 });
-//         const newId = lastVideo ? lastVideo.id + 1 : 1;
-
-//         let video = new Video({
-//             id: newId,
-//             userName, 
-//             title, 
-//             description, 
-//             url, 
-//             thumbnailUrl, 
-//             uploadDate, 
-//             duration
-//         });
-
-//         if (await addVideo(userName, video)) {
-//             return await video.save();
-//         }
-//         return null;
-//     } catch (error) {
-//         console.error("Error creating video:", error);
-//         return null;
-//     }
-// }
 
 export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
     try {

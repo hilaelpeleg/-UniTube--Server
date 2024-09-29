@@ -96,7 +96,7 @@ export const updateVideoLikes = async (req, res) => {
     const videoId = req.params.pid; // Get video ID from request parameters
     const newLikes = req.body.likes; // Get new likes count from request body
     try {
-        const updatedVideo = await updateLikesById(videoId, newLikes); // Call the service to update likes
+        const updatedVideo = await videoServices.updateLikesById(videoId, newLikes); // Call the service to update likes
         if (!updatedVideo) {
             return res.status(404).json({ error: 'Video not found' }); // Return 404 if video not found
         }
