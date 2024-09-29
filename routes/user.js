@@ -2,6 +2,7 @@ import express from 'express';
 import userController from '../controllers/user.js';
 import videoController from '../controllers/video.js';
 import { validateToken } from '../models/token.js';
+import multer from 'multer';
 
 const router = express.Router();
 

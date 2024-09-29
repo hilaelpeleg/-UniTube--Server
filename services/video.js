@@ -146,12 +146,22 @@ export async function getAllVideos() {
     }
 }
 
+// Service function to update video likes
+export const updateLikesById = async (videoId, newLikes) => {
+    try {
+        const video = await Video.findOneAndUpdate({ id: videoId }, { likes: newLikes }, { new: true }); // Update video likes
+        return video; // Return updated video
+    } catch (error) {
+        throw new Error('Could not update likes'); // Throw an error if update fails
+    }
+};
+
 export default {
     getAllVideos,
     createVideo,
-    addVideo,
     deleteVideo,
     editVideo,
     getVideoById,
     getUserVideos,
+    updateLikesById
 };

@@ -36,14 +36,17 @@ export async function getUserVideos(req, res) {
 export async function editVideo(req, res) {
     try {
         const { title, description } = req.body;
-        const video = await videoServices.editVideo(req.params.userName, req.params.videoId, title, description, req.file.path);
+        const userName = req.params.id; // Get user name from the URL params
+        const videoId = req.params.pid; // Get video ID from the URL params
+
+        const video = await videoServices.editVideo(userName, videoId, title, description, req.file.path);
         
         if (!video) {
             return res.status(404).json({ error: 'Video not found or failed to update' });
         }
-        res.json(video);
+        res.json(video); // Return the updated video
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update video' });
+        res.status(500).json({ error: 'Failed to update video' }); // Handle any errors
     }
 }
 
@@ -89,6 +92,21 @@ export async function deleteVideo(req, res) {
     }
 }
 
+export const updateVideoLikes = async (req, res) => {
+    const videoId = req.params.pid; // Get video ID from request parameters
+    const newLikes = req.body.likes; // Get new likes count from request body
+    try {
+        const updatedVideo = await updateLikesById(videoId, newLikes); // Call the service to update likes
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' }); // Return 404 if video not found
+        }
+        res.json(updatedVideo); // Return the updated video
+    } catch (error) {
+        console.error('Error updating video likes:', error); // Log the error
+        res.status(500).json({ error: 'Could not update likes' }); // Return server error
+    }
+};
+
 export default {
     getVideos,
     getVideoById,
@@ -96,4 +114,5 @@ export default {
     editVideo,
     createVideo,
     deleteVideo,
+    updateVideoLikes
 };
