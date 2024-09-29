@@ -25,15 +25,24 @@ export async function createVideo(req, res) {
             return res.status(400).json({ error: 'Video and thumbnail files are required' });
         }
 
-        const url = req.files.url[0].path; // Get the video file path from Multer
-        const thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
+        let url = req.files.url[0].path; // Get the video file path from Multer
+        let thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
+
+         // Remove the "public/" from the paths
+         url = url.replace(/^public[\\/]/, '');  // Use regex to remove 'public/' at the start of the path
+         thumbnailUrl = thumbnailUrl.replace(/^public[\\/]/, '');  // Same for thumbnail
+
+         // Ensure paths start with a '/'
+        url = url.startsWith('/') ? url : '/' + url;
+        thumbnailUrl = thumbnailUrl.startsWith('/') ? thumbnailUrl : '/' + thumbnailUrl;
+
         console.log('Video URL:', url);
         console.log('Thumbnail URL:', thumbnailUrl);
-        
+
         // Now pass the userName and videoId to the service
         const video = await videoServices.createVideoInService(videoId, userName, title, description, url, thumbnailUrl,
-             uploadDate, duration, profilePicture);
-        
+            uploadDate, duration, profilePicture);
+
         if (!video) {
             return res.status(400).json({ error: 'Failed to create video' });
         }
@@ -63,7 +72,7 @@ export async function editVideo(req, res) {
         const videoId = req.params.pid; // Get video ID from the URL params
 
         const video = await videoServices.editVideo(userName, videoId, title, description, req.file.path);
-        
+
         if (!video) {
             return res.status(404).json({ error: 'Video not found or failed to update' });
         }
