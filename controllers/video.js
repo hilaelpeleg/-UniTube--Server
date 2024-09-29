@@ -9,15 +9,38 @@ export async function getVideos(req, res) {
     }
 }
 
-export async function getVideoById(req, res) {
+// Create a new video
+export async function createVideo(req, res) {
+    console.log('add video server controller');
+    console.log('Request body:', req.body);
+    console.log('Files:', req.files); // Print the files received in the request
     try {
-        const video = await videoServices.getVideoById(req.params.videoId);
-        if (!video) {
-            return res.status(404).json({ error: 'Video not found' });
+        const { title, description, uploadDate, duration } = req.body;
+        const userName = req.params.id; // Get the uploader's username from the URL
+        const videoId = req.body.id; // Get the video ID from the request body
+        const profilePicture = req.body.profilePicture;
+
+        // Check that files exist
+        if (!req.files || !req.files.url || !req.files.thumbnailUrl) {
+            return res.status(400).json({ error: 'Video and thumbnail files are required' });
         }
-        res.json(video);
+
+        const url = req.files.url[0].path; // Get the video file path from Multer
+        const thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
+        console.log('Video URL:', url);
+        console.log('Thumbnail URL:', thumbnailUrl);
+        
+        // Now pass the userName and videoId to the service
+        const video = await videoServices.createVideoInService(videoId, userName, title, description, url, thumbnailUrl,
+             uploadDate, duration, profilePicture);
+        
+        if (!video) {
+            return res.status(400).json({ error: 'Failed to create video' });
+        }
+        res.status(201).json(video); // Respond with the newly created video
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch video' });
+        console.error('Error in createVideo:', error); // Log the error
+        res.status(500).json({ error: 'Failed to create video' }); // Respond with server error
     }
 }
 
@@ -47,23 +70,6 @@ export async function editVideo(req, res) {
         res.json(video); // Return the updated video
     } catch (error) {
         res.status(500).json({ error: 'Failed to update video' }); // Handle any errors
-    }
-}
-
-// Create a new video
-export async function createVideo(req, res) {
-    try {
-        const { userName, title, description, uploadDate, duration } = req.body;
-        const url = req.file.path; // Get the video file path from Multer
-        const thumbnailUrl = req.file.path; // Get the thumbnail file path from Multer
-        const video = await videoServices.createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration);
-        
-        if (!video) {
-            return res.status(400).json({ error: 'Failed to create video' });
-        }
-        res.status(201).json(video);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create video' });
     }
 }
 
@@ -109,7 +115,6 @@ export const updateVideoLikes = async (req, res) => {
 
 export default {
     getVideos,
-    getVideoById,
     getUserVideos,
     editVideo,
     createVideo,

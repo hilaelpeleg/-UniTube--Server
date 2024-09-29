@@ -3,17 +3,22 @@ import User from '../models/user.js';
 import Comment from '../models/comment.js';
 
 
-export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
+export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
+    console.log("video service");
     try {
         const newVideo = new Video({
-            userName,
+            id: videoId,  // Ensure the ID is being set
+            uploader: userName,
             title,
             description,
             url,
             thumbnailUrl,
             uploadDate,
-            duration
-        });
+            duration,
+            likes: 0, // Initialize likes to 0
+            comments: [], // Initialize comments as an empty array
+            profilePicture
+            });
 
         // Save the video and update the user
         const savedVideo = await newVideo.save();
@@ -133,7 +138,7 @@ export const updateLikesById = async (videoId, newLikes) => {
 
 export default {
     getAllVideos,
-    createVideo,
+    createVideoInService,
     deleteVideo,
     editVideo,
     getVideoById,
