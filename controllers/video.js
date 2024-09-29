@@ -113,11 +113,24 @@ export const updateVideoLikes = async (req, res) => {
     }
 };
 
+export async function getVideoById(req, res) {
+    try {
+        const video = await videoServices.getVideoById(req.params.videoId);
+        if (!video) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        res.json(video);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch video' });
+    }
+}
+
 export default {
     getVideos,
     getUserVideos,
     editVideo,
     createVideo,
     deleteVideo,
-    updateVideoLikes
+    updateVideoLikes,
+    getVideoById
 };
