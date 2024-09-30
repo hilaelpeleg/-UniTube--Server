@@ -1,7 +1,8 @@
 import Video from '../models/video.js';
 import User from '../models/user.js';
 import Comment from '../models/comment.js';
-
+import fs from 'fs';
+import path from 'path';
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
     console.log("video service");
@@ -18,7 +19,7 @@ export async function createVideoInService(videoId, userName, title, description
             likes: 0, // Initialize likes to 0
             comments: [], // Initialize comments as an empty array
             profilePicture
-            });
+        });
 
         // Save the video and update the user
         const savedVideo = await newVideo.save();
@@ -32,35 +33,46 @@ export async function createVideoInService(videoId, userName, title, description
 
 export async function deleteVideo(userName, videoId) {
     try {
-        // Convert the videoId to a Number
-        const numericVideoId = Number(videoId); // Ensure videoId is a number
+        const numericVideoId = Number(videoId);
+        console.log('Numeric Video ID:', numericVideoId);
 
-        // Find the video by its numeric ID
         const video = await Video.findOne({ id: numericVideoId }).populate('comments');
+        console.log('Video found:', video);
 
-        // Check if the video exists
         if (!video) {
-            return false; // Video not found
+            return false;
         }
 
-        // Ensure the logged-in user is the uploader
         if (video.uploader !== userName) {
-            return false; // User is not authorized to delete this video
+            return false;
         }
 
-        // Delete the video by its numeric ID
         await Video.findOneAndDelete({ id: numericVideoId });
 
-        // Get the IDs of the comments associated with the video
         const commentIds = video.comments.map(comment => comment._id);
-
-        // Delete all comments associated with the video
         await Comment.deleteMany({ _id: { $in: commentIds } });
 
-        return true; // Deletion successful
+        const videoFilePath = path.join('public', video.url);
+        const thumbnailFilePath = path.join('public', video.thumbnailUrl);
+
+        if (fs.existsSync(videoFilePath)) {
+            fs.unlinkSync(videoFilePath);
+            console.log(`Successfully deleted video file: ${videoFilePath}`);
+        } else {
+            console.log(`Video file does not exist: ${videoFilePath}`);
+        }
+
+        if (fs.existsSync(thumbnailFilePath)) {
+            fs.unlinkSync(thumbnailFilePath);
+            console.log(`Successfully deleted thumbnail file: ${thumbnailFilePath}`);
+        } else {
+            console.log(`Thumbnail file does not exist: ${thumbnailFilePath}`);
+        }
+
+        return true;
     } catch (error) {
         console.error('Error deleting video:', error);
-        return false; // Deletion failed
+        return false;
     }
 }
 
@@ -100,7 +112,7 @@ export async function getUserVideos(userName) {
     try {
         // Find the user by username and populate their videos
         const user = await User.findOne({ userName }).populate('videos');
-        
+
         // If the user is not found, return a 404 error
         if (!user) {
             return { code: 404, error: "User not found!" };
