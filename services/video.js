@@ -76,21 +76,32 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
-export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl) {
+
+export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files) {
     try {
-        const video = await Video.findById(videoId);
-        if (!video || video.userName !== userName) {
+        const video = await Video.findOne({ id: videoId });
+        if (!video || video.uploader !== userName) {
             return null; // Video not found or not authorized
         }
 
+        // Update fields
         video.title = updatedTitle || video.title;
         video.description = updatedDescription || video.description;
-        video.url = updatedVideoUrl || video.url;
+
+        // Handle file uploads (if new files were provided)
+        if (files) {
+            if (files.url) {
+                video.url = files.url[0].path.replace(/^public[\\/]/, ''); // Save the new video path
+            }
+            if (files.thumbnailUrl) {
+                video.thumbnailUrl = files.thumbnailUrl[0].path.replace(/^public[\\/]/, ''); // Save the new thumbnail path
+            }
+        }
 
         await video.save();
-        return video;
+        return video; // Return the updated video
     } catch (error) {
-        console.log(error);
+        console.log('Error in updating video:', error);
         return null;
     }
 }
