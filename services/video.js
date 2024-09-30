@@ -1,98 +1,97 @@
 import Video from '../models/video.js';
 import User from '../models/user.js';
 import Comment from '../models/comment.js';
+import fs from 'fs';
+import path from 'path';
 
-export async function createVideo(userName, title, description, url, thumbnailUrl, uploadDate, duration) {
+export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
+    console.log("video service");
     try {
-        const lastVideo = await Video.findOne().sort({ id: -1 });
-        const newId = lastVideo ? lastVideo.id + 1 : 1;
-
-        let video = new Video({
-            id: newId,
-            userName, 
-            title, 
-            description, 
-            url, 
-            thumbnailUrl, 
-            uploadDate, 
-            duration
+        const newVideo = new Video({
+            id: videoId,  // Ensure the ID is being set
+            uploader: userName,
+            title,
+            description,
+            url,
+            thumbnailUrl,
+            uploadDate,
+            duration,
+            likes: 0, // Initialize likes to 0
+            comments: [], // Initialize comments as an empty array
+            profilePicture
         });
 
-        if (await addVideo(userName, video)) {
-            return await video.save();
-        }
-        return null;
+        // Save the video and update the user
+        const savedVideo = await newVideo.save();
+        await User.findOneAndUpdate({ userName }, { $push: { videos: savedVideo._id } });
+        return savedVideo;
     } catch (error) {
         console.error("Error creating video:", error);
         return null;
     }
 }
 
-export async function addVideo(userName, video) {
+export async function deleteVideo(userName, videoId) {
     try {
-        const user = await User.findOne({ userName });
-        if (user) {
-            user.videos.push(video.id);
-            await user.save();
-            return true;
+        const numericVideoId = Number(videoId);
+        console.log('Numeric Video ID:', numericVideoId);
+
+        const video = await Video.findOne({ id: numericVideoId }).populate('comments');
+        console.log('Video found:', video);
+
+        if (!video) {
+            return false;
         }
+
+        if (video.uploader !== userName) {
+            return false;
+        }
+
+        await Video.findOneAndDelete({ id: numericVideoId });
+
+        const commentIds = video.comments.map(comment => comment._id);
+        await Comment.deleteMany({ _id: { $in: commentIds } });
+
+        const videoFilePath = path.join('public', video.url);
+        const thumbnailFilePath = path.join('public', video.thumbnailUrl);
+
+        if (fs.existsSync(videoFilePath)) {
+            fs.unlinkSync(videoFilePath);
+            console.log(`Successfully deleted video file: ${videoFilePath}`);
+        } else {
+            console.log(`Video file does not exist: ${videoFilePath}`);
+        }
+
+        if (fs.existsSync(thumbnailFilePath)) {
+            fs.unlinkSync(thumbnailFilePath);
+            console.log(`Successfully deleted thumbnail file: ${thumbnailFilePath}`);
+        } else {
+            console.log(`Thumbnail file does not exist: ${thumbnailFilePath}`);
+        }
+
+        return true;
     } catch (error) {
-        console.log(error);
+        console.error('Error deleting video:', error);
         return false;
     }
 }
 
-export async function deleteVideo(userName, videoId) {
-    try {
-        // Convert the videoId to a Number
-        const numericVideoId = Number(videoId); // Ensure videoId is a number
-
-        // Find the video by its numeric ID
-        const video = await Video.findOne({ id: numericVideoId }).populate('comments');
-
-        // Check if the video exists
-        if (!video) {
-            return false; // Video not found
-        }
-
-        // Ensure the logged-in user is the uploader
-        if (video.uploader !== userName) {
-            return false; // User is not authorized to delete this video
-        }
-
-        // Delete the video by its numeric ID
-        await Video.findOneAndDelete({ id: numericVideoId });
-
-        // Get the IDs of the comments associated with the video
-        const commentIds = video.comments.map(comment => comment._id);
-
-        // Delete all comments associated with the video
-        await Comment.deleteMany({ _id: { $in: commentIds } });
-
-        return true; // Deletion successful
-    } catch (error) {
-        console.error('Error deleting video:', error);
-        return false; // Deletion failed
-    }
-}
-
-export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl, updatedThumbnailUrl) {
+export async function editVideo(userName, videoId, updatedTitle, updatedDescription, updatedVideoUrl) {
     try {
         const video = await Video.findById(videoId);
         if (!video || video.userName !== userName) {
-            return { code: 404, error: "Video not found!" };
+            return null; // Video not found or not authorized
         }
 
-        if (updatedTitle) video.title = updatedTitle;
-        if (updatedDescription) video.description = updatedDescription;
-        if (updatedVideoUrl) video.url = updatedVideoUrl;
-        if (updatedThumbnailUrl) video.thumbnailUrl = updatedThumbnailUrl;
+        video.title = updatedTitle || video.title;
+        video.description = updatedDescription || video.description;
+        video.url = updatedVideoUrl || video.url;
 
         await video.save();
         return video;
     } catch (error) {
         console.log(error);
-        return { code: 500, error: "Failed to update video" };
+        return null;
     }
 }
 
@@ -113,7 +112,7 @@ export async function getUserVideos(userName) {
     try {
         // Find the user by username and populate their videos
         const user = await User.findOne({ userName }).populate('videos');
-        
+
         // If the user is not found, return a 404 error
         if (!user) {
             return { code: 404, error: "User not found!" };
@@ -139,12 +138,22 @@ export async function getAllVideos() {
     }
 }
 
+// Service function to update video likes
+export const updateLikesById = async (videoId, newLikes) => {
+    try {
+        const video = await Video.findOneAndUpdate({ id: videoId }, { likes: newLikes }, { new: true }); // Update video likes
+        return video; // Return updated video
+    } catch (error) {
+        throw new Error('Could not update likes'); // Throw an error if update fails
+    }
+};
+
 export default {
     getAllVideos,
-    createVideo,
-    addVideo,
+    createVideoInService,
     deleteVideo,
     editVideo,
     getVideoById,
     getUserVideos,
+    updateLikesById
 };

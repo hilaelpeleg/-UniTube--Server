@@ -9,15 +9,47 @@ export async function getVideos(req, res) {
     }
 }
 
-export async function getVideoById(req, res) {
+// Create a new video
+export async function createVideo(req, res) {
+    console.log('add video server controller');
+    console.log('Request body:', req.body);
+    console.log('Files:', req.files); // Print the files received in the request
     try {
-        const video = await videoServices.getVideoById(req.params.videoId);
-        if (!video) {
-            return res.status(404).json({ error: 'Video not found' });
+        const { title, description, uploadDate, duration } = req.body;
+        const userName = req.params.id; // Get the uploader's username from the URL
+        const videoId = req.body.id; // Get the video ID from the request body
+        const profilePicture = req.body.profilePicture;
+
+        // Check that files exist
+        if (!req.files || !req.files.url || !req.files.thumbnailUrl) {
+            return res.status(400).json({ error: 'Video and thumbnail files are required' });
         }
-        res.json(video);
+
+        let url = req.files.url[0].path; // Get the video file path from Multer
+        let thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
+
+         // Remove the "public/" from the paths
+         url = url.replace(/^public[\\/]/, '');  // Use regex to remove 'public/' at the start of the path
+         thumbnailUrl = thumbnailUrl.replace(/^public[\\/]/, '');  // Same for thumbnail
+
+         // Ensure paths start with a '/'
+        url = url.startsWith('/') ? url : '/' + url;
+        thumbnailUrl = thumbnailUrl.startsWith('/') ? thumbnailUrl : '/' + thumbnailUrl;
+
+        console.log('Video URL:', url);
+        console.log('Thumbnail URL:', thumbnailUrl);
+
+        // Now pass the userName and videoId to the service
+        const video = await videoServices.createVideoInService(videoId, userName, title, description, url, thumbnailUrl,
+            uploadDate, duration, profilePicture);
+
+        if (!video) {
+            return res.status(400).json({ error: 'Failed to create video' });
+        }
+        res.status(201).json(video); // Respond with the newly created video
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch video' });
+        console.error('Error in createVideo:', error); // Log the error
+        res.status(500).json({ error: 'Failed to create video' }); // Respond with server error
     }
 }
 
@@ -32,27 +64,21 @@ export async function getUserVideos(req, res) {
     }
 }
 
+// Edit video details
 export async function editVideo(req, res) {
     try {
-        const updatedVideo = await videoServices.editVideo(req.params.user_name, req.params.videoId, req.body.title, req.body.description, req.body.url, req.body.thumbnailUrl);
-        if (!updatedVideo) {
+        const { title, description } = req.body;
+        const userName = req.params.id; // Get user name from the URL params
+        const videoId = req.params.pid; // Get video ID from the URL params
+
+        const video = await videoServices.editVideo(userName, videoId, title, description, req.file.path);
+
+        if (!video) {
             return res.status(404).json({ error: 'Video not found or failed to update' });
         }
-        res.json(updatedVideo);
+        res.json(video); // Return the updated video
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update video' });
-    }
-}
-
-export async function createVideo(req, res) {
-    try {
-        const video = await videoServices.createVideo(req.body.user_name, req.body.title, req.body.description, req.body.url, req.body.thumbnailUrl, req.body.uploadDate, req.body.duration);
-        if (!video) {
-            return res.status(400).json({ error: 'Failed to create video' });
-        }
-        res.status(201).json(video);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create video' });
+        res.status(500).json({ error: 'Failed to update video' }); // Handle any errors
     }
 }
 
@@ -81,11 +107,39 @@ export async function deleteVideo(req, res) {
     }
 }
 
+export const updateVideoLikes = async (req, res) => {
+    const videoId = req.params.pid; // Get video ID from request parameters
+    const newLikes = req.body.likes; // Get new likes count from request body
+    try {
+        const updatedVideo = await videoServices.updateLikesById(videoId, newLikes); // Call the service to update likes
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' }); // Return 404 if video not found
+        }
+        res.json(updatedVideo); // Return the updated video
+    } catch (error) {
+        console.error('Error updating video likes:', error); // Log the error
+        res.status(500).json({ error: 'Could not update likes' }); // Return server error
+    }
+};
+
+export async function getVideoById(req, res) {
+    try {
+        const video = await videoServices.getVideoById(req.params.videoId);
+        if (!video) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        res.json(video);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch video' });
+    }
+}
+
 export default {
     getVideos,
-    getVideoById,
     getUserVideos,
     editVideo,
     createVideo,
     deleteVideo,
+    updateVideoLikes,
+    getVideoById
 };
