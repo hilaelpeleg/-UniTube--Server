@@ -5,14 +5,23 @@ export async function getUser(userName) {
 }
 
 export async function createUser(userName, firstName, lastName, password, profilePicture) {
-    const newUser = new User({
-        userName: userName,
-        firstName: firstName,
-        lastName: lastName,
-        password: password,
-        profilePicture: profilePicture
-    });
-    return await newUser.save();
+    try {
+               // Create a new user object
+        const newUser = new User({
+            userName,
+            firstName,
+            lastName,
+            password, // Make sure to hash the password before saving
+            profilePicture,
+        });
+
+        // Save the new user to the database
+        await newUser.save();
+        return newUser; // Return the created user data
+    } catch (error) {
+        console.error('Error saving user:', error);
+        throw new Error('Failed to create user');
+    }
 }
 
 // Delete a user by username

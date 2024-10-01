@@ -12,12 +12,22 @@ export async function getUser(req, res) {
     }
 }
 
+// Controller function to create a user
 export async function createUser(req, res) {
-    try {
-        const { userName, firstName, lastName, password, profilePicture } = req.body;
+        try {
+        // Get the fields from the request body
+        const { userName, firstName, lastName, password } = req.body;
+
+        // Get the profile picture file from req.file
+        const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
+
+        // Create a new user using the user service
         const newUser = await userService.createUser(userName, firstName, lastName, password, profilePicture);
+        
+        // Respond with the created user data
         res.status(201).json(newUser);
     } catch (error) {
+        console.error('Error creating user:', error);
         res.status(500).json({ error: 'Failed to create user' });
     }
 }
