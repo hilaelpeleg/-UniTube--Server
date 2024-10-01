@@ -12,7 +12,6 @@ export async function getVideos(req, res) {
     }
 }
 
-// Create a new video
 export async function createVideo(req, res) {
     console.log('add video server controller');
     console.log('Request body:', req.body);
@@ -67,7 +66,6 @@ export async function getUserVideos(req, res) {
     }
 }
 
-// Edit video details
 export async function editVideo(req, res) {
     try {
         const { title, description } = req.body; // Video details
@@ -130,6 +128,7 @@ export async function editVideo(req, res) {
         res.status(500).json({ error: 'Failed to update video' });
     }
 }
+
 export async function deleteVideo(req, res) {
     try {
         // Extract userName from the validated token (assuming validateToken middleware was used)

@@ -36,25 +36,32 @@ export async function deleteVideo(userName, videoId) {
         const numericVideoId = Number(videoId);
         console.log('Numeric Video ID:', numericVideoId);
 
+        // Find the video by its numeric ID and populate comments
         const video = await Video.findOne({ id: numericVideoId }).populate('comments');
         console.log('Video found:', video);
 
+        // Check if the video exists
         if (!video) {
             return false;
         }
 
+        // Check if the uploader is the user requesting deletion
         if (video.uploader !== userName) {
             return false;
         }
 
+        // Delete the video from the database
         await Video.findOneAndDelete({ id: numericVideoId });
 
+        // Get the IDs of the comments associated with the video
         const commentIds = video.comments.map(comment => comment._id);
         await Comment.deleteMany({ _id: { $in: commentIds } });
 
+        // Define the paths for the video and thumbnail files
         const videoFilePath = path.join('public', video.url);
         const thumbnailFilePath = path.join('public', video.thumbnailUrl);
 
+        // Check if the video file exists and delete it
         if (fs.existsSync(videoFilePath)) {
             fs.unlinkSync(videoFilePath);
             console.log(`Successfully deleted video file: ${videoFilePath}`);
@@ -62,6 +69,7 @@ export async function deleteVideo(userName, videoId) {
             console.log(`Video file does not exist: ${videoFilePath}`);
         }
 
+        // Check if the thumbnail file exists and delete it
         if (fs.existsSync(thumbnailFilePath)) {
             fs.unlinkSync(thumbnailFilePath);
             console.log(`Successfully deleted thumbnail file: ${thumbnailFilePath}`);
@@ -102,7 +110,7 @@ export async function editVideo(userName, videoId, updatedTitle, updatedDescript
                 existingVideo.thumbnailUrl = '/' + files.thumbnailUrl[0].path.replace(/\\/g, '/').replace(/^public[\/]/, '');
             }
         }
-        
+
         await existingVideo.save(); // Save changes to the database
         return existingVideo; // Return the updated video
     } catch (error) {
@@ -113,17 +121,17 @@ export async function editVideo(userName, videoId, updatedTitle, updatedDescript
 
 export async function getVideoById(videoId) {
     try {
-        // המרה של ה-ID למספר
+        // Convert the ID to a number
         const numericVideoId = Number(videoId);
 
-        // חיפוש הסרטון לפי ה-ID
+        // Search for the video by ID
         const video = await Video.findOne({ id: numericVideoId });
-        
-        // בדיקה אם הסרטון נמצא
+
+        // Check if the video was found
         if (!video) {
             return { code: 404, error: "Video not found!" };
         }
-        return video; // החזרת הסרטון במקרה שהכל תקין
+        return video;  // Return the video if everything is okay
     } catch (error) {
         console.log('Error fetching video:', error);
         return { code: 500, error: "Failed to fetch video" };
