@@ -77,44 +77,55 @@ export async function deleteVideo(userName, videoId) {
 }
 
 
-export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files) {
+export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
     try {
-        const video = await Video.findOne({ id: videoId });
-        if (!video || video.uploader !== userName) {
+        const numericVideoId = Number(videoId); // Convert to number
+        // Since you already received the video through existingVideo, there's no need to fetch it again
+
+        if (!existingVideo || existingVideo.uploader !== userName) {
             return null; // Video not found or not authorized
         }
+        console.log("updatedTitle", updatedTitle);
+        console.log("updatedDescription", updatedDescription);
+        // Update fields, using previous values if new ones are not provided
+        existingVideo.title = updatedTitle !== undefined ? updatedTitle : existingVideo.title;
+        existingVideo.description = updatedDescription !== undefined ? updatedDescription : existingVideo.description;
 
-        // Update fields
-        video.title = updatedTitle || video.title;
-        video.description = updatedDescription || video.description;
-
-        // Handle file uploads (if new files were provided)
+        // Handle file uploads (if new files are provided)
         if (files) {
             if (files.url) {
-                video.url = files.url[0].path.replace(/^public[\\/]/, ''); // Save the new video path
+                // Update the video path, replacing backslashes and removing 'public/' prefix, and add leading slash
+                existingVideo.url = '/' + files.url[0].path.replace(/\\/g, '/').replace(/^public[\/]/, '');
             }
             if (files.thumbnailUrl) {
-                video.thumbnailUrl = files.thumbnailUrl[0].path.replace(/^public[\\/]/, ''); // Save the new thumbnail path
+                // Update the thumbnail path, replacing backslashes and removing 'public/' prefix, and add leading slash
+                existingVideo.thumbnailUrl = '/' + files.thumbnailUrl[0].path.replace(/\\/g, '/').replace(/^public[\/]/, '');
             }
         }
-
-        await video.save();
-        return video; // Return the updated video
+        
+        await existingVideo.save(); // Save changes to the database
+        return existingVideo; // Return the updated video
     } catch (error) {
         console.log('Error in updating video:', error);
-        return null;
+        return null; // Handle error
     }
 }
 
 export async function getVideoById(videoId) {
     try {
-        const video = await Video.findById(videoId);
+        // המרה של ה-ID למספר
+        const numericVideoId = Number(videoId);
+
+        // חיפוש הסרטון לפי ה-ID
+        const video = await Video.findOne({ id: numericVideoId });
+        
+        // בדיקה אם הסרטון נמצא
         if (!video) {
             return { code: 404, error: "Video not found!" };
         }
-        return video;
+        return video; // החזרת הסרטון במקרה שהכל תקין
     } catch (error) {
-        console.log(error);
+        console.log('Error fetching video:', error);
         return { code: 500, error: "Failed to fetch video" };
     }
 }
