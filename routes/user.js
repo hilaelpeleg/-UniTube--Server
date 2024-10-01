@@ -6,7 +6,6 @@ import multer from 'multer';
 
 const router = express.Router();
 
-router.post('/', userController.createUser);
 router.get('/:id', userController.getUser);
 router.put('/:id', validateToken, userController.updateUser);
 router.delete('/:id', validateToken, userController.deleteUser);
@@ -14,6 +13,8 @@ router.delete('/:id', validateToken, userController.deleteUser);
 // Configure multer for file storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        if (file.fieldname === 'profilePicture') 
+            cb(null, 'public/profiles'); // Set destination for profile pictures
         // Set destination based on the field name
         if (file.fieldname === 'url') {
             cb(null, 'public/videos'); // Set destination for videos
@@ -28,6 +29,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }); // Create multer instance
 
+router.post('/', upload.single('profilePicture'), userController.createUser);
 
 router.get('/:id/videos/:pid', validateToken, videoController.getVideoById);
 router.put('/:id/videos/:pid', validateToken, 
