@@ -9,29 +9,24 @@ export async function initializeDatabase() {
         // Check if the User collection is empty
         const userCount = await User.countDocuments();
         console.log(`User collection contains ${userCount} documents`);
-        
+
         if (userCount === 0) {
             if (fs.existsSync('./data/fictitious_users.json')) {
                 // Read users from the JSON file
                 const users = JSON.parse(fs.readFileSync('./data/fictitious_users.json', 'utf-8'));
                 console.log(`Loaded ${users.length} users from JSON`);
 
-                // Encode profile pictures in Base64
+                // Set profile pictures to relative paths instead of Base64
                 for (let user of users) {
                     const imagePath = `./public${user.profilePicture}`;
 
                     if (fs.existsSync(imagePath)) {
-                        const imageBuffer = fs.readFileSync(imagePath);
-                        // Convert image to Base64 and add the appropriate header (e.g., PNG or JPEG)
-                        user.profilePicture = `data:image/png;base64,${imageBuffer.toString('base64')}`;
-                        console.log(`Profile picture for ${user.name} encoded successfully`);
+                        // Save the relative path to the profile picture in the database
+                        console.log(`Profile picture for ${user.userName} set successfully`);
                     } else {
                         console.error(`Image not found: ${imagePath}`);
                     }
                 }
-
-                // Insert the users into the database
-                const createdUsers = await User.insertMany(users);
                 console.log('Inserted initial users with Base64 encoded profile pictures');
             } else {
                 console.error('User JSON file not found');
