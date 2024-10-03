@@ -7,8 +7,6 @@ import multer from 'multer';
 const router = express.Router();
 
 router.get('/:id', userController.getUser);
-router.put('/:id', validateToken, userController.updateUser);
-router.delete('/:id', validateToken, userController.deleteUser);
 
 // Configure multer for file storage
 const storage = multer.diskStorage({
@@ -30,6 +28,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create multer instance
 
 router.post('/', upload.single('profilePicture'), userController.createUser);
+router.put('/:id', validateToken, userController.updateUser);
+router.delete('/:id', validateToken, userController.deleteUser);
+
 
 router.get('/:id/videos/:pid', validateToken, videoController.getVideoById);
 router.put('/:id/videos/:pid', validateToken, 
