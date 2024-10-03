@@ -49,14 +49,36 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const { userName } = req.params; // Extract the userName from the request parameters
-        // Extract the fields that can be updated from the request body
-        const { firstName, lastName, password, profilePicture } = req.body; 
-        const updatedUser = await userService.updateUser(userName, firstName, lastName, password, profilePicture);
+        const userName = req.params.id; // Extract the userName from the request parameters
+        const { firstName, lastName, password} = req.body; 
+        // Get the profile picture file from req.file
+        const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
+        
+        const user = await userService.getUser(userName); // Check if the user exists first
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        // Store path for to the old profile pic file
+        const oldPicFilePath = path.join('public', user.profilePicture); 
 
+        const updatedUser = await userService.updateUser(user, firstName, lastName, password, profilePicture);
         if (!updatedUser) {
             return res.status(404).json({ error: 'User not found' });
         }
+
+        // Check if new file were uploaded and remove old file
+        if (req.files) {
+            // Check if a new profilePicture file was uploaded
+            if (req.files.profilePicture) {
+                // Remove the old video file
+                if (fs.existsSync(oldPicFilePath)) {
+                    fs.unlinkSync(oldPicFilePath);
+                    console.log(`Deleted old video file: ${oldPicFilePath}`);
+                } else {
+                    console.log(`Old video file does not exist: ${oldPicFilePathh}`);
+                }
+            }
+         }   
 
         res.status(200).json(updatedUser);
     } catch (error) {

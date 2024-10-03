@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 
 export async function getUser(userName) {
-    return await User.findOne({userName: userName});
+    return await User.findOne({ userName: userName });
 }
 
 export async function createUser(userName, firstName, lastName, password, profilePicture) {
     try {
-               // Create a new user object
+        // Create a new user object
         const newUser = new User({
             userName,
             firstName,
@@ -31,7 +31,7 @@ export async function deleteUser(userName) {
     try {
         // Find the user by username
         const user = await User.findOne({ userName: userName });
-        
+
         if (!user) {
             throw new Error('User not found'); // Throw error if user doesn't exist
         }
@@ -59,14 +59,28 @@ export async function deleteUser(userName) {
 
 export async function updateUser(userName, firstName, lastName, password, profilePicture) {
     try {
-        const updatedUser = await User.findOneAndUpdate(
-            { userName },  // חיפוש לפי userName
-            { firstName, lastName, password, profilePicture },  // שדות לעדכון
-            { new: true }  // מחזיר את המסמך המעודכן
-        );
+        // Find the user by username
+        const existingUser = await User.findOne({ userName });
 
-        return updatedUser;
+        if (!existingUser) {
+            throw new Error('User not found'); // Throw error if user doesn't exist
+        }
+
+        // Update fields, using previous values if new ones are not provided
+        existingUser.firstName = firstName !== undefined ? firstName : existingUser.firstName;
+        existingUser.lastName = lastName !== undefined ? lastName : existingUser.lastName;
+        existingUser.password = password !== undefined ? password : existingUser.password;
+
+        // Handle profile picture upload (if a new file is provided)
+        if (profilePicture instanceof File) {
+            existingUser.profilePicture = '/' + profilePicture.path.replace(/\\/g, '/').replace(/^public[\/]/, '');
+        }
+
+        // Save the updated user to the database
+        await existingUser.save();
+        return existingUser; // Return the updated user
     } catch (error) {
+        console.error('Failed to update user:', error);
         throw new Error('Failed to update user');
     }
 }

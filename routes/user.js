@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create multer instance
 
 router.post('/', upload.single('profilePicture'), userController.createUser);
-router.put('/:id', validateToken, userController.updateUser);
+router.put('/:id', validateToken,upload.single('profilePicture'), userController.updateUser);
 router.delete('/:id', validateToken, userController.deleteUser);
 
 
