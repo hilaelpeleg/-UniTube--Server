@@ -13,9 +13,6 @@ export async function getVideos(req, res) {
 }
 
 export async function createVideo(req, res) {
-    console.log('add video server controller');
-    console.log('Request body:', req.body);
-    console.log('Files:', req.files); // Print the files received in the request
     try {
         const { title, description, uploadDate, duration } = req.body;
         const userName = req.params.id; // Get the uploader's username from the URL

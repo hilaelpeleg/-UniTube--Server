@@ -35,12 +35,14 @@ export async function createUser(req, res) {
 export async function deleteUser(req, res) {
     try {
         const userName = req.params.id; 
-        const user = await userService.deleteUser(userName);
+        const user = await userService.getUser(userName); // Check if the user exists first
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+        await userService.deleteUser(userName); // Proceed to delete if found
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
+        console.error('Error deleting user:', error);
         res.status(500).json({ error: 'Failed to delete user' });
     }
 }
