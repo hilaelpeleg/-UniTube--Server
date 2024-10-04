@@ -1,4 +1,7 @@
 import * as userService from '../services/user.js';
+import path from 'path';
+import fs from 'fs';
+
 
 export async function getUser(req, res) {
     try {
@@ -49,39 +52,59 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const userName = req.params.id; // Extract the userName from the request parameters
-        const { firstName, lastName, password} = req.body; 
+        console.log('Update user called');
+
+        // Extract the userName from the request parameters
+        const userName = req.params.id; 
+        console.log(`User name received: ${userName}`);
+        
+        // Extract other fields from request body
+        const { firstName, lastName, password } = req.body; 
+        console.log(`Received body: firstName=${firstName}, lastName=${lastName}, password=${password}`);
+
         // Get the profile picture file from req.file
         const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
-        
-        const user = await userService.getUser(userName); // Check if the user exists first
+        console.log(`Profile picture path: ${profilePicture}`);
+
+        // Fetch the user from the database
+        const user = await userService.getUser(userName);
         if (!user) {
+            console.log('User not found');
             return res.status(404).json({ error: 'User not found' });
         }
-        // Store path for to the old profile pic file
-        const oldPicFilePath = path.join('public', user.profilePicture); 
+        console.log('User found:', user);
 
-        const updatedUser = await userService.updateUser(user, firstName, lastName, password, profilePicture);
+        // Store path to the old profile picture file
+        const oldPicFilePath = path.join('public', user.profilePicture);
+        console.log(`Old profile picture path: ${oldPicFilePath}`);
+
+        // Update user information in the database
+        const updatedUser = await userService.updateUser(user.userName, firstName, lastName, password, profilePicture);
         if (!updatedUser) {
+            console.log('Failed to update user in the database');
             return res.status(404).json({ error: 'User not found' });
         }
+        console.log('User updated:', updatedUser);
 
-        // Check if new file were uploaded and remove old file
-        if (req.files) {
-            // Check if a new profilePicture file was uploaded
-            if (req.files.profilePicture) {
-                // Remove the old video file
+        // Check if new file was uploaded and remove the old file
+        if (req.file) {
+            if (req.file.profilePicture) {
+                console.log('New profile picture uploaded');
+                
+                // Remove the old profile picture file if it exists
                 if (fs.existsSync(oldPicFilePath)) {
                     fs.unlinkSync(oldPicFilePath);
-                    console.log(`Deleted old video file: ${oldPicFilePath}`);
+                    console.log(`Deleted old profile picture: ${oldPicFilePath}`);
                 } else {
-                    console.log(`Old video file does not exist: ${oldPicFilePathh}`);
+                    console.log(`Old profile picture does not exist: ${oldPicFilePath}`);
                 }
             }
-         }   
+        }
 
+        // Respond with the updated user details
         res.status(200).json(updatedUser);
     } catch (error) {
+        console.error('Error occurred:', error);  // Log the actual error
         res.status(500).json({ error: 'Failed to update user' });
     }
 }

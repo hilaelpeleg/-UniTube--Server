@@ -59,12 +59,17 @@ export async function deleteUser(userName) {
 
 export async function updateUser(userName, firstName, lastName, password, profilePicture) {
     try {
+        console.log(`updateUser called with: userName=${userName}, firstName=${firstName}, lastName=${lastName}, password=${password}`);
+        
         // Find the user by username
-        const existingUser = await User.findOne({ userName });
-
+        const existingUser = await User.findOne({ userName: userName });
+        
         if (!existingUser) {
-            throw new Error('User not found'); // Throw error if user doesn't exist
+            console.log('User not found');
+            throw new Error('User not found');
         }
+
+        console.log('User found:', existingUser);
 
         // Update fields, using previous values if new ones are not provided
         existingUser.firstName = firstName !== undefined ? firstName : existingUser.firstName;
@@ -72,18 +77,23 @@ export async function updateUser(userName, firstName, lastName, password, profil
         existingUser.password = password !== undefined ? password : existingUser.password;
 
         // Handle profile picture upload (if a new file is provided)
-        if (profilePicture instanceof File) {
+        if (profilePicture && profilePicture.path) {  // בדיקה אם יש קובץ תמונה והאם יש מאפיין path
+            console.log('Profile picture received:', profilePicture.path);
             existingUser.profilePicture = '/' + profilePicture.path.replace(/\\/g, '/').replace(/^public[\/]/, '');
+            console.log('Updating profile picture');
         }
 
         // Save the updated user to the database
         await existingUser.save();
-        return existingUser; // Return the updated user
+        console.log('User updated successfully:', existingUser);
+
+        return existingUser;  // Return the updated user
     } catch (error) {
         console.error('Failed to update user:', error);
         throw new Error('Failed to update user');
     }
 }
+
 
 export default {
     getUser,
