@@ -53,9 +53,10 @@ export async function createVideo(req, res) {
 }
 
 export async function getUserVideos(req, res) {
+    console.log("getusersvcont");
     try {
         // Call the service to get videos by uploader's name
-        const videos = await videoServices.getUserVideos(req.params.userName);
+        const videos = await videoServices.getUserVideos(req.params.id);
         res.json(videos); // Send back the videos in the response
     } catch (error) {
         // Handle errors and send back a failure response

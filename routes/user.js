@@ -42,7 +42,8 @@ router.delete('/:id/videos/:pid', validateToken, videoController.deleteVideo);
 
 // Create video route
 router.post('/:id/videos', validateToken, upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), videoController.createVideo);
-router.get('/:id/videos', videoController.getUserVideos);
+console.log("pop");
 
+router.get('/:id/videos', videoController.getUserVideos);
 
 export default router;
