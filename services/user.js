@@ -26,11 +26,6 @@ export async function createUser(userName, firstName, lastName, password, profil
     }
 }
 
-export const checkUserNameExists = async (userName) => {
-    const user = await User.findOne({ userName });
-    return !!user;
-  };
-
 // Delete a user by username
 export async function deleteUser(userName) {
     try {
@@ -116,7 +111,6 @@ export async function updateUser(userName, firstName, lastName, password, profil
 export default {
     getUser,
     createUser,
-    checkUserNameExists,
     deleteUser,
     updateUser
 };

@@ -21,6 +21,12 @@ export async function createUser(req, res) {
         // Get the fields from the request body
         const { userName, firstName, lastName, password } = req.body;
 
+        // Check if the user already exists
+        const existingUser = await userService.getUser(userName);
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
+
         // Get the profile picture file from req.file, or use the default profile picture
         const profilePicture = req.file 
         ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/')
