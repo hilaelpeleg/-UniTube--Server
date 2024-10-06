@@ -18,8 +18,11 @@ export async function createUser(req, res) {
         // Get the fields from the request body
         const { userName, firstName, lastName, password } = req.body;
 
-        // Get the profile picture file from req.file
-        const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
+        // Get the profile picture file from req.file, or use the default profile picture
+        const profilePicture = req.file 
+        ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/')
+        : '/profiles/default_profile_picture.png';  // Default picture if none is uploaded
+
 
         // Create a new user using the user service
         const newUser = await userService.createUser(userName, firstName, lastName, password, profilePicture);
