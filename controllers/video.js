@@ -1,4 +1,7 @@
 import videoServices from '../services/video.js';
+import path from 'path';
+import fs from 'fs';
+
 
 export async function getVideos(req, res) {
     try {
@@ -9,11 +12,7 @@ export async function getVideos(req, res) {
     }
 }
 
-// Create a new video
 export async function createVideo(req, res) {
-    console.log('add video server controller');
-    console.log('Request body:', req.body);
-    console.log('Files:', req.files); // Print the files received in the request
     try {
         const { title, description, uploadDate, duration } = req.body;
         const userName = req.params.id; // Get the uploader's username from the URL
@@ -54,9 +53,10 @@ export async function createVideo(req, res) {
 }
 
 export async function getUserVideos(req, res) {
+    console.log("getusersvcont");
     try {
         // Call the service to get videos by uploader's name
-        const videos = await videoServices.getUserVideos(req.params.userName);
+        const videos = await videoServices.getUserVideos(req.params.id);
         res.json(videos); // Send back the videos in the response
     } catch (error) {
         // Handle errors and send back a failure response
@@ -64,21 +64,66 @@ export async function getUserVideos(req, res) {
     }
 }
 
-// Edit video details
 export async function editVideo(req, res) {
     try {
-        const { title, description } = req.body;
-        const userName = req.params.id; // Get user name from the URL params
-        const videoId = req.params.pid; // Get video ID from the URL params
+        const { title, description } = req.body; // Video details
+        const userName = req.params.id; // Username from URL parameters
+        const videoId = Number(req.params.pid); // ID of the video from URL parameters
+        console.log('Request body:', req.body);
+        console.log("User Name:", userName);
+        console.log("Video ID:", videoId);
+        console.log("Title:", title);
+        console.log("Description:", description);
 
-        const video = await videoServices.editVideo(userName, videoId, title, description, req.file.path);
-
+        // Fetch the existing video details
+        const video = await videoServices.getVideoById(videoId);
+        
         if (!video) {
-            return res.status(404).json({ error: 'Video not found or failed to update' });
+            return res.status(404).json({ error: 'Video not found' });
         }
-        res.json(video); // Return the updated video
+
+        // Store paths for old files
+        const oldVideoFilePath = path.join('public', video.url); // Path to the old video file
+        const oldThumbnailFilePath = path.join('public', video.thumbnailUrl); // Path to the old thumbnail file
+
+        // Update video properties and handle new files
+        const updatedVideo = await videoServices.editVideo(userName, videoId, title, description, req.files, video);
+
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Failed to update video' });
+        }
+
+        console.log("Updated Video:", updatedVideo);
+
+        // Check if new files were uploaded and remove old files
+        if (req.files) {
+            // Check if a new video file was uploaded
+            if (req.files.url) {
+                // Remove the old video file
+                if (fs.existsSync(oldVideoFilePath)) {
+                    fs.unlinkSync(oldVideoFilePath);
+                    console.log(`Deleted old video file: ${oldVideoFilePath}`);
+                } else {
+                    console.log(`Old video file does not exist: ${oldVideoFilePath}`);
+                }
+            }
+
+            // Check if a new thumbnail file was uploaded
+            if (req.files.thumbnailUrl) {
+                // Remove the old thumbnail file
+                if (fs.existsSync(oldThumbnailFilePath)) {
+                    fs.unlinkSync(oldThumbnailFilePath);
+                    console.log(`Deleted old thumbnail file: ${oldThumbnailFilePath}`);
+                } else {
+                    console.log(`Old thumbnail file does not exist: ${oldThumbnailFilePath}`);
+                }
+            }
+        }
+
+        res.json(updatedVideo); // Return the updated video
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update video' }); // Handle any errors
+        console.error('Error updating video:', error);
+        res.status(500).json({ error: 'Failed to update video' });
     }
 }
 

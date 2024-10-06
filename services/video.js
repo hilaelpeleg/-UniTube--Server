@@ -17,8 +17,10 @@ export async function createVideoInService(videoId, userName, title, description
             uploadDate,
             duration,
             likes: 0, // Initialize likes to 0
-            comments: [], // Initialize comments as an empty array
-            profilePicture
+            disLikes: 0,
+            profilePicture,
+            likesList : [],
+            dislikesList: []
         });
 
         // Save the video and update the user
