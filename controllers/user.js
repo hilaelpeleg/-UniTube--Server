@@ -90,21 +90,6 @@ export async function updateUser(req, res) {
         }
         console.log('User updated:', updatedUser);
 
-        // Check if new file was uploaded and remove the old file
-        if (req.file) {
-            if (req.file.profilePicture) {
-                console.log('New profile picture uploaded');
-                
-                // Remove the old profile picture file if it exists
-                if (fs.existsSync(oldPicFilePath)) {
-                    fs.unlinkSync(oldPicFilePath);
-                    console.log(`Deleted old profile picture: ${oldPicFilePath}`);
-                } else {
-                    console.log(`Old profile picture does not exist: ${oldPicFilePath}`);
-                }
-            }
-        }
-
         // Respond with the updated user details
         res.status(200).json(updatedUser);
     } catch (error) {
