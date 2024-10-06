@@ -1,12 +1,14 @@
 import User from '../models/user.js';
+import fs from 'fs';
+import path from 'path';
 
 export async function getUser(userName) {
-    return await User.findOne({userName: userName});
+    return await User.findOne({ userName: userName });
 }
 
 export async function createUser(userName, firstName, lastName, password, profilePicture) {
     try {
-               // Create a new user object
+        // Create a new user object
         const newUser = new User({
             userName,
             firstName,

@@ -4,63 +4,21 @@
       "lastName": "Rodrigo",
       "password": "12345",
       "userName": "Olivia Rodrigo",
-      "profilePicture": "profile_pic_olivia_rodrigo"
+      "profilePicture": "/profiles/olivia.png"
     },
     {
       "firstName": "Noa",
       "lastName": "Kirel",
       "password": "12345678",
       "userName": "Noa Kirel",
-      "profilePicture": "https://www.eurovisionlive.com/wp-content/uploads/Israel-2023-Noa-Kirel-Eran-Levi.jpg"
-    },
-    {
-      "firstName": "Lizzy",
-      "lastName": "McAlpine",
-      "password": "12345",
-      "userName": "Lizzy McAlpine",
-      "profilePicture": "profile_pic_lizzy_mcalpine"
+      "profilePicture": "/profiles/noakirel.png"
     },
     {
       "firstName": "Tate",
       "lastName": "McRae",
       "password": "12345",
       "userName": "Tate McRae",
-      "profilePicture": "profile_pic_tate_mcrae"
-    },
-    {
-      "firstName": "Benson",
-      "lastName": "Boone",
-      "password": "12345",
-      "userName": "Benson Boone",
-      "profilePicture": "profile_pic_benson_boone"
-    },
-    {
-      "firstName": "Miley",
-      "lastName": "Cyrus",
-      "password": "12345",
-      "userName": "Miley Cyrus",
-      "profilePicture": "profile_pic_miley_cyrus"
-    },
-    {
-      "firstName": "Lionel",
-      "lastName": "Richie",
-      "password": "12345",
-      "userName": "Lionel Richie",
-      "profilePicture": "profile_pic_lionel_richie"
-    },
-    {
-      "firstName": "The",
-      "lastName": "Cranberries",
-      "password": "12345",
-      "userName": "The Cranberries",
-      "profilePicture": "profile_pic_the_cranberries"
-    },
-    {
-      "firstName": "The",
-      "lastName": "Neighbourhood",
-      "password": "12345",
-      "userName": "The Neighbourhood",
-      "profilePicture": "profile_pic_the_neighbourhood"
+      "profilePicture": "/profiles/tate.png"
     },
     {
       "firstName": "Hila",
