@@ -1,6 +1,7 @@
 import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
+import Video from '../models/video.js'; 
 
 export async function getVideos(req, res) {
     console.log("getvidecontroller");
@@ -14,11 +15,6 @@ export async function getVideos(req, res) {
 
         const allVideos = [...popularVideos, ...uniqueFeaturedVideos];
 
-        // Increment views for each video being returned
-        allVideos.forEach(video => {
-            incrementViews(video.id); // Increment views for each video
-        });
-
         if (allVideos.length < 20) {
             return res.json(allVideos);
         }
@@ -30,16 +26,21 @@ export async function getVideos(req, res) {
     }
 }
 
-// Function to increment views for a specific video
-export async function incrementViews(videoId) {
+export async function incrementVideoViews(req, res) {
+    const videoId = req.params.pid; // Get the ID from the params
     try {
-        await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
+        const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
+
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+
+        res.json(updatedVideo); // Return the updated video
     } catch (error) {
-        console.error("Error updating views:", error);
+        console.error('Error incrementing views:', error);
+        res.status(500).json({ error: 'Failed to increment views' });
     }
 }
-
-
 export async function createVideo(req, res) {
     try {
         const { title, description, uploadDate, duration } = req.body;
@@ -214,5 +215,5 @@ export default {
     deleteVideo,
     updateVideoLikes,
     getVideoById,
-    incrementViews
+    incrementVideoViews
 };

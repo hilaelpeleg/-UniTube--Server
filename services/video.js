@@ -32,6 +32,20 @@ export async function createVideoInService(videoId, userName, title, description
     }
 }
 
+export async function incrementViewsById(videoId) {
+    try {
+        // Increment the views for the video with the given ID
+        return await Video.findOneAndUpdate(
+            { id: videoId }, // Search by your ID
+            { $inc: { views: 1 } }, // Increment the views field by 1
+            { new: true } // Return the updated document
+        );
+    } catch (error) {
+        console.error('Error updating views:', error);
+        throw error; // Throw the error to be handled in the controller
+    }
+}
+
 export async function deleteVideo(userName, videoId) {
     try {
         const numericVideoId = Number(videoId);

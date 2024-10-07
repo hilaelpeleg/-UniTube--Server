@@ -11,7 +11,8 @@
     ],
     "uploadDate": "2021-02-18",
     "duration": "3:40",
-    "profilePicture": "/profiles/olivia.png"
+    "profilePicture": "/profiles/olivia.png",
+    "views": 0
   },
   {
     "id": 2,
@@ -25,7 +26,8 @@
     ],
     "uploadDate": "2024-06-13",
     "duration": "4:20",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 3,
@@ -39,7 +41,8 @@
     ],
     "uploadDate": "2023-10-04",
     "duration": "3:13",
-    "profilePicture": "/profiles/lizzy.png"
+    "profilePicture": "/profiles/lizzy.png",
+    "views": 0
   },
   {
     "id": 4,
@@ -53,7 +56,8 @@
     ],
     "uploadDate": "2022-11-06",
     "duration": "3:42",
-    "profilePicture": "/profiles/tate.png"
+    "profilePicture": "/profiles/tate.png",
+    "views": 0
   },
   {
     "id": 5,
@@ -67,7 +71,8 @@
     ],
     "uploadDate": "2024-06-15",
     "duration": "3:25",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 6,
@@ -81,7 +86,8 @@
     ],
     "uploadDate": "2024-06-17",
     "duration": "4:05",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 7,
@@ -95,7 +101,8 @@
     ],
     "uploadDate": "2024-01-16",
     "duration": "3:28",
-    "profilePicture": "/profiles/benson.png"
+    "profilePicture": "/profiles/benson.png",
+    "views": 0
   },
   {
     "id": 8,
@@ -109,7 +116,8 @@
     ],
     "uploadDate": "2021-10-06",
     "duration": "3:33",
-    "profilePicture":  "/profiles/miley.png"
+    "profilePicture":  "/profiles/miley.png",
+    "views": 0
   },
   {
     "id": 9,
@@ -123,7 +131,8 @@
      ],
     "uploadDate": "2024-06-20",
     "duration": "3:35",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 10,
@@ -137,7 +146,8 @@
     ],
     "uploadDate": "2024-06-16",
     "duration": "3:40",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 11,
@@ -151,7 +161,8 @@
     ],
     "uploadDate": "2012-10-04",
     "duration": "3:48",
-    "profilePicture": "/profiles/Lionel.png"
+    "profilePicture": "/profiles/Lionel.png",
+    "views": 0
   },
   {
     "id": 12,
@@ -165,7 +176,8 @@
     ],
     "uploadDate": "2024-06-11",
     "duration": "3:45",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 13,
@@ -179,7 +191,8 @@
     ],
     "uploadDate": "2003-02-02",
     "duration": "4:37",
-    "profilePicture": "/profiles/The Cranberries.png"
+    "profilePicture": "/profiles/The Cranberries.png",
+    "views": 0
   },
   {
     "id": 14,
@@ -193,7 +206,8 @@
     ],
     "uploadDate": "2024-06-12",
     "duration": "3:10",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 15,
@@ -207,7 +221,8 @@
     ],
     "uploadDate": "2024-06-14",
     "duration": "3:55",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 16,
@@ -221,7 +236,8 @@
     ],
     "uploadDate": "2024-06-18",
     "duration": "3:50",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 17,
@@ -235,7 +251,8 @@
     ],
     "uploadDate": "2024-06-19",
     "duration": "3:30",
-    "profilePicture": "/profiles/noakirel.png"
+    "profilePicture": "/profiles/noakirel.png",
+    "views": 0
   },
   {
     "id": 18,
@@ -249,6 +266,7 @@
     ],
     "uploadDate": "2020-04-14",
     "duration": "3:43",
-    "profilePicture":  "/profiles/The Neighbourhood.png"
+    "profilePicture":  "/profiles/The Neighbourhood.png",
+    "views": 0
   }
 ]
