@@ -199,5 +199,6 @@ export default {
     editVideo,
     getVideoById,
     getUserVideos,
-    updateLikesById
+    updateLikesById,
+    incrementViewsById
 };
