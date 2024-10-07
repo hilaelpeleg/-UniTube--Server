@@ -1,21 +1,47 @@
 import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
-
+import Video from '../models/video.js'; 
 
 export async function getVideos(req, res) {
+    console.log("getvidecontroller");
     try {
-        const videos = await videoServices.getAllVideos();
-        res.json(videos);
+        const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
+        const featuredVideos = await Video.find({ featured: true }).limit(10);
+
+        const popularVideoIds = new Set(popularVideos.map(video => video.id));
+
+        const uniqueFeaturedVideos = featuredVideos.filter(video => !popularVideoIds.has(video.id));
+
+        const allVideos = [...popularVideos, ...uniqueFeaturedVideos];
+
+        if (allVideos.length < 20) {
+            return res.json(allVideos);
+        }
+
+        res.json(allVideos);
     } catch (error) {
+        console.error("Error fetching videos:", error);
         res.status(500).json({ error: 'Failed to fetch videos' });
     }
 }
 
+export async function incrementVideoViews(req, res) {
+    const videoId = req.params.pid; // Get the ID from the params
+    try {
+        const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
+
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+
+        res.json(updatedVideo); // Return the updated video
+    } catch (error) {
+        console.error('Error incrementing views:', error);
+        res.status(500).json({ error: 'Failed to increment views' });
+    }
+}
 export async function createVideo(req, res) {
-    console.log('add video server controller');
-    console.log('Request body:', req.body);
-    console.log('Files:', req.files); // Print the files received in the request
     try {
         const { title, description, uploadDate, duration } = req.body;
         const userName = req.params.id; // Get the uploader's username from the URL
@@ -58,7 +84,7 @@ export async function createVideo(req, res) {
 export async function getUserVideos(req, res) {
     try {
         // Call the service to get videos by uploader's name
-        const videos = await videoServices.getUserVideos(req.params.userName);
+        const videos = await videoServices.getUserVideos(req.params.id);
         res.json(videos); // Send back the videos in the response
     } catch (error) {
         // Handle errors and send back a failure response
@@ -188,5 +214,6 @@ export default {
     createVideo,
     deleteVideo,
     updateVideoLikes,
-    getVideoById
+    getVideoById,
+    incrementVideoViews
 };

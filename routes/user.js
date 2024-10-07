@@ -7,8 +7,6 @@ import multer from 'multer';
 const router = express.Router();
 
 router.get('/:id', userController.getUser);
-router.put('/:id', validateToken, userController.updateUser);
-router.delete('/:id', validateToken, userController.deleteUser);
 
 // Configure multer for file storage
 const storage = multer.diskStorage({
@@ -30,8 +28,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // Create multer instance
 
 router.post('/', upload.single('profilePicture'), userController.createUser);
+router.put('/:id', validateToken,upload.single('profilePicture'), userController.updateUser);
+router.delete('/:id', validateToken, userController.deleteUser);
 
-router.get('/:id/videos/:pid', validateToken, videoController.getVideoById);
+
+router.get('/:id/videos/:pid    ', videoController.getVideoById);
 router.put('/:id/videos/:pid', validateToken, 
     upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), // Use multer here
     videoController.editVideo
@@ -42,6 +43,5 @@ router.delete('/:id/videos/:pid', validateToken, videoController.deleteVideo);
 // Create video route
 router.post('/:id/videos', validateToken, upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), videoController.createVideo);
 router.get('/:id/videos', videoController.getUserVideos);
-
 
 export default router;
