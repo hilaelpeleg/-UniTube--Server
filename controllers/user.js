@@ -4,6 +4,7 @@ import fs from 'fs';
 
 
 export async function getUser(req, res) {
+    console.log("getuserc", req.params.id);
     try {
         const user = await userService.getUser(req.params.id);
         if (!user) {

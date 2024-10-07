@@ -2,15 +2,43 @@ import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
 
-
 export async function getVideos(req, res) {
+    console.log("getvidecontroller");
     try {
-        const videos = await videoServices.getAllVideos();
-        res.json(videos);
+        const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
+        const featuredVideos = await Video.find({ featured: true }).limit(10);
+
+        const popularVideoIds = new Set(popularVideos.map(video => video.id));
+
+        const uniqueFeaturedVideos = featuredVideos.filter(video => !popularVideoIds.has(video.id));
+
+        const allVideos = [...popularVideos, ...uniqueFeaturedVideos];
+
+        // Increment views for each video being returned
+        allVideos.forEach(video => {
+            incrementViews(video.id); // Increment views for each video
+        });
+
+        if (allVideos.length < 20) {
+            return res.json(allVideos);
+        }
+
+        res.json(allVideos);
     } catch (error) {
+        console.error("Error fetching videos:", error);
         res.status(500).json({ error: 'Failed to fetch videos' });
     }
 }
+
+// Function to increment views for a specific video
+export async function incrementViews(videoId) {
+    try {
+        await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
+    } catch (error) {
+        console.error("Error updating views:", error);
+    }
+}
+
 
 export async function createVideo(req, res) {
     try {
@@ -53,7 +81,6 @@ export async function createVideo(req, res) {
 }
 
 export async function getUserVideos(req, res) {
-    console.log("getusersvcont");
     try {
         // Call the service to get videos by uploader's name
         const videos = await videoServices.getUserVideos(req.params.id);
@@ -186,5 +213,6 @@ export default {
     createVideo,
     deleteVideo,
     updateVideoLikes,
-    getVideoById
+    getVideoById,
+    incrementViews
 };

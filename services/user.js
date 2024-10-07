@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export async function getUser(userName) {
+    console.log(userName);
     return await User.findOne({ userName: userName });
 }
 

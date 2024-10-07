@@ -2,7 +2,7 @@
   {
     "firstName": "Olivia",
     "lastName": "Rodrigo",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Olivia Rodrigo",
     "profilePicture": "/profiles/olivia.png"
   },
@@ -16,49 +16,49 @@
   {
     "firstName": "Lizzy",
     "lastName": "McAlpine",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Lizzy McAlpine",
     "profilePicture": "/profiles/lizzy.png"
   },
   {
     "firstName": "Tate",
     "lastName": "McRae",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Tate McRae",
     "profilePicture":"/profiles/tate.png"
   },
   {
     "firstName": "Benson",
     "lastName": "Boone",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Benson Boone",
     "profilePicture": "/profiles/benson.png"
   },
   {
     "firstName": "Miley",
     "lastName": "Cyrus",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Miley Cyrus",
-    "profilePicture": "/profiles/miley/png"
+    "profilePicture": "/profiles/miley.png"
   },
   {
     "firstName": "Lionel",
     "lastName": "Richie",
-    "password": "12345",
+    "password": "12345678",
     "userName": "Lionel Richie",
     "profilePicture": "/profiles/Lionel.png"
   },
   {
     "firstName": "The",
     "lastName": "Cranberries",
-    "password": "12345",
+    "password": "12345678",
     "userName": "The Cranberries",
     "profilePicture": "/profiles/The Cranberries.png"
   },
   {
     "firstName": "The",
     "lastName": "Neighbourhood",
-    "password": "12345",
+    "password": "12345678",
     "userName": "The Neighbourhood",
     "profilePicture": "/profiles/The Neighbourhood.png"
   },
