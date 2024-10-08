@@ -42,8 +42,7 @@ export async function deleteComment(commentId) {
 }
 
 export async function updateCommentsWithProfilePicture(userName, profilePicture) {
-    console.log("Updating profile picture for user:", userName, "with new picture:", profilePicture);
-    
+   
     try {
         // מצא את כל התגובות של המשתמש לפני העדכון
         const commentsBeforeUpdate = await Comment.find({ name: userName });
@@ -71,11 +70,10 @@ export async function updateCommentsWithProfilePicture(userName, profilePicture)
     }
 }
 
-
 export default {
     getCommentsByVideoId,
     createComment,
     updateComment,
     deleteComment,
-    updateCommentsWithProfilePicture
+    updateCommentsWithProfilePicture,
 };

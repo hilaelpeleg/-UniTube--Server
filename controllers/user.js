@@ -1,5 +1,6 @@
 import * as userService from '../services/user.js';
 import * as commentService from '../services/comment.js';
+import * as videoService from '../services/video.js';
 import path from 'path';
 
 export async function getUser(req, res) {
@@ -16,7 +17,7 @@ export async function getUser(req, res) {
 
 // Controller function to create a user
 export async function createUser(req, res) {
-        try {
+    try {
         // Get the fields from the request body
         const { userName, firstName, lastName, password } = req.body;
 
@@ -27,14 +28,14 @@ export async function createUser(req, res) {
         }
 
         // Get the profile picture file from req.file, or use the default profile picture
-        const profilePicture = req.file 
-        ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/')
-        : '/profiles/default_profile_picture.png';  // Default picture if none is uploaded
+        const profilePicture = req.file
+            ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/')
+            : '/profiles/default_profile_picture.png';  // Default picture if none is uploaded
 
 
         // Create a new user using the user service
         const newUser = await userService.createUser(userName, firstName, lastName, password, profilePicture);
-        
+
         // Respond with the created user data
         res.status(201).json(newUser);
     } catch (error) {
@@ -45,7 +46,7 @@ export async function createUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        const userName = req.params.id; 
+        const userName = req.params.id;
         const user = await userService.getUser(userName); // Check if the user exists first
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -63,11 +64,11 @@ export async function updateUser(req, res) {
         console.log('Update user called');
 
         // Extract the userName from the request parameters
-        const userName = req.params.id; 
+        const userName = req.params.id;
         console.log(`User name received: ${userName}`);
-        
+
         // Extract other fields from request body
-        const { firstName, lastName, password } = req.body; 
+        const { firstName, lastName, password } = req.body;
         console.log(`Received body: firstName=${firstName}, lastName=${lastName}, password=${password}`);
 
         // Get the profile picture file from req.file
@@ -96,8 +97,9 @@ export async function updateUser(req, res) {
 
         // Update the profile picture in all comments made by this user
         if (profilePicture) {
-            console.log("0000000000", profilePicture);
-            await commentService.updateCommentsWithProfilePicture(user.userName, profilePicture); // פונקציה שתעדכן את התמונות בתגובות
+            await commentService.updateCommentsWithProfilePicture(user.userName, profilePicture);
+            // Update the profile picture in all videos uploaded by this user
+            await videoService.updateVideosProfilePicture(user.userName, profilePicture);
         }
 
         // Respond with the updated user details

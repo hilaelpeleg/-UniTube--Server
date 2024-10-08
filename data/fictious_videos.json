@@ -7,8 +7,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/gNi_6U5Pm_o/maxresdefault.jpg",
     "uploader": "Olivia Rodrigo",
     "likes": 400,
-    "comments": [ 
-    ],
     "uploadDate": "2021-02-18",
     "duration": "3:40",
     "profilePicture": "/profiles/olivia.png",
@@ -25,8 +23,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/5GUYcnAMZ5c/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 900,
-    "comments": [
-    ],
     "uploadDate": "2024-06-13",
     "duration": "4:20",
     "profilePicture": "/profiles/noakirel.png",
@@ -43,8 +39,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/2bpMSpFTdzM/maxresdefault.jpg",
     "uploader": "Lizzy McAlpine",
     "likes": 4700,
-    "comments": [
-    ],
     "uploadDate": "2023-10-04",
     "duration": "3:13",
     "profilePicture": "/profiles/lizzy.png",
@@ -61,8 +55,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/uS_y_65CcpA/maxresdefault.jpg",
     "uploader": "Tate McRae",
     "likes": 14000,
-    "comments": [
-    ],
     "uploadDate": "2022-11-06",
     "duration": "3:42",
     "profilePicture": "/profiles/tate.png",
@@ -79,8 +71,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/TqWbfnerkKI/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 600,
-    "comments": [
-    ],
     "uploadDate": "2024-06-15",
     "duration": "3:25",
     "profilePicture": "/profiles/noakirel.png",
@@ -97,8 +87,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/mv0BtAepULk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCgqcTkIkxA4rO4C3proe76C7CCOA",
     "uploader": "Noa Kirel",
     "likes": 700,
-    "comments": [
-    ],
     "uploadDate": "2024-06-17",
     "duration": "4:05",
     "profilePicture": "/profiles/noakirel.png",
@@ -115,8 +103,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/Oa_RSwwpPaA/maxresdefault.jpg",
     "uploader": "Benson Boone",
     "likes": 2500,
-    "comments": [
-    ],
     "uploadDate": "2024-01-16",
     "duration": "3:28",
     "profilePicture": "/profiles/benson.png",
@@ -133,8 +119,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/Y0ORhLyJWuc/maxresdefault.jpg",
     "uploader": "Miley Cyrus",
     "likes": 800,
-    "comments": [
-    ],
     "uploadDate": "2021-10-06",
     "duration": "3:33",
     "profilePicture":  "/profiles/miley.png",
@@ -151,8 +135,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/InIRjIqPKt4/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 900,
-    "comments": [
-     ],
     "uploadDate": "2024-06-20",
     "duration": "3:35",
     "profilePicture": "/profiles/noakirel.png",
@@ -169,8 +151,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/4--8fjxjkYU/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 750,
-    "comments": [
-    ],
     "uploadDate": "2024-06-16",
     "duration": "3:40",
     "profilePicture": "/profiles/noakirel.png",
@@ -187,8 +167,6 @@
     "thumbnailUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3TWpnLptr15afEtDb9oWORX0Ke9oltIFsVg&s",
     "uploader": "Lionel Richie",
     "likes": 750,
-    "comments": [
-    ],
     "uploadDate": "2012-10-04",
     "duration": "3:48",
     "profilePicture": "/profiles/Lionel.png",
@@ -205,9 +183,7 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/grxEstxbW_w/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLA0-lWdbo-SwBp3QejpBTtZqxVEKQ",
     "uploader": "Noa Kirel",
     "likes": 1000,
-    "comments": [
-    ],
-    "uploadDate": "2024-06-11",
+      "uploadDate": "2024-06-11",
     "duration": "3:45",
     "profilePicture": "/profiles/noakirel.png",
     "views": 0,
@@ -223,8 +199,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/G6Kspj3OO0s/maxresdefault.jpg",
     "uploader": "The Cranberries",
     "likes": 14000,
-    "comments": [
-    ],
     "uploadDate": "2003-02-02",
     "duration": "4:37",
     "profilePicture": "/profiles/The Cranberries.png",
@@ -241,9 +215,7 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/5TUN30--lUw/hqdefault.jpg?v=609a526a",
     "uploader": "Noa Kirel",
     "likes": 850,
-    "comments": [
-    ],
-    "uploadDate": "2024-06-12",
+     "uploadDate": "2024-06-12",
     "duration": "3:10",
     "profilePicture": "/profiles/noakirel.png",
     "views": 0,
@@ -259,8 +231,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/oQbh5Kvet04/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 500,
-    "comments": [
-    ],
     "uploadDate": "2024-06-14",
     "duration": "3:55",
     "profilePicture": "/profiles/noakirel.png",
@@ -277,8 +247,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/X7iLyas7Oi4/maxresdefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 800,
-    "comments": [
-    ],
     "uploadDate": "2024-06-18",
     "duration": "3:50",
     "profilePicture": "/profiles/noakirel.png",
@@ -295,8 +263,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/9on_1WpYvAY/sddefault.jpg",
     "uploader": "Noa Kirel",
     "likes": 650,
-    "comments": [
-    ],
     "uploadDate": "2024-06-19",
     "duration": "3:30",
     "profilePicture": "/profiles/noakirel.png",
@@ -313,8 +279,6 @@
     "thumbnailUrl": "https://i.ytimg.com/vi/GCdwKhTtNNw/hq720.jpg",
     "uploader": "The Neighbourhood",
     "likes": 500,
-    "comments": [
-    ],
     "uploadDate": "2020-04-14",
     "duration": "3:43",
     "profilePicture":  "/profiles/The Neighbourhood.png",
