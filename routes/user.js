@@ -45,3 +45,4 @@ router.post('/:id/videos', validateToken, upload.fields([{ name: 'url', maxCount
 router.get('/:id/videos', videoController.getUserVideos);
 
 export default router;
+
