@@ -70,10 +70,21 @@ export async function updateCommentsWithProfilePicture(userName, profilePicture)
     }
 }
 
+export async function deleteCommentsByUser(userName) {
+    try {
+        const result = await Comment.deleteMany({ name: userName }); // מחק את כל התגובות של המשתמש
+        console.log(`Deleted ${result.deletedCount} comments for user: ${userName}`);
+    } catch (error) {
+        console.error('Failed to delete comments:', error);
+        throw error; // דחוף את השגיאה למעלה
+    }
+}
+
 export default {
     getCommentsByVideoId,
     createComment,
     updateComment,
     deleteComment,
     updateCommentsWithProfilePicture,
+    deleteCommentsByUser
 };
