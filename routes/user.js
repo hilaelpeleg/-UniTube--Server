@@ -32,7 +32,7 @@ router.put('/:id', validateToken,upload.single('profilePicture'), userController
 router.delete('/:id', validateToken, userController.deleteUser);
 
 
-router.get('/:id/videos/:pid', validateToken, videoController.getVideoById);
+router.get('/:id/videos/:pid    ', videoController.getVideoById);
 router.put('/:id/videos/:pid', validateToken, 
     upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), // Use multer here
     videoController.editVideo
@@ -43,6 +43,5 @@ router.delete('/:id/videos/:pid', validateToken, videoController.deleteVideo);
 // Create video route
 router.post('/:id/videos', validateToken, upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), videoController.createVideo);
 router.get('/:id/videos', videoController.getUserVideos);
-
 
 export default router;

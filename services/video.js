@@ -17,8 +17,13 @@ export async function createVideoInService(videoId, userName, title, description
             uploadDate,
             duration,
             likes: 0, // Initialize likes to 0
+            disLikes: 0, // Initialize dislikes to 0
+            likesList: [], // Initialize likes list as an empty array
+            dislikesList: [], // Initialize likes to 0
             comments: [], // Initialize comments as an empty array
-            profilePicture
+            profilePicture,
+            views: 0,
+
         });
 
         // Save the video and update the user
@@ -28,6 +33,20 @@ export async function createVideoInService(videoId, userName, title, description
     } catch (error) {
         console.error("Error creating video:", error);
         return null;
+    }
+}
+
+export async function incrementViewsById(videoId) {
+    try {
+        // Increment the views for the video with the given ID
+        return await Video.findOneAndUpdate(
+            { id: videoId }, // Search by your ID
+            { $inc: { views: 1 } }, // Increment the views field by 1
+            { new: true } // Return the updated document
+        );
+    } catch (error) {
+        console.error('Error updating views:', error);
+        throw error; // Throw the error to be handled in the controller
     }
 }
 
@@ -137,19 +156,18 @@ export async function getVideoById(videoId) {
         return { code: 500, error: "Failed to fetch video" };
     }
 }
-
 export async function getUserVideos(userName) {
     try {
-        // Find the user by username and populate their videos
-        const user = await User.findOne({ userName }).populate('videos');
+        // Find videos by uploader's name
+        const videos = await Video.find({ uploader: userName });
 
-        // If the user is not found, return a 404 error
-        if (!user) {
-            return { code: 404, error: "User not found!" };
+        // If no videos are found, return a 404 error
+        if (!videos || videos.length === 0) {
+            return { code: 404, error: "No videos found for this user" };
         }
 
         // Return the user's videos
-        return user.videos;
+        return videos;
     } catch (error) {
         // Log the error and return a 500 internal server error
         console.error("Error fetching user videos:", error);
@@ -185,5 +203,6 @@ export default {
     editVideo,
     getVideoById,
     getUserVideos,
-    updateLikesById
+    updateLikesById,
+    incrementViewsById
 };

@@ -1,7 +1,5 @@
 import * as userService from '../services/user.js';
 import path from 'path';
-import fs from 'fs';
-
 
 export async function getUser(req, res) {
     try {
