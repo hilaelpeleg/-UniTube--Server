@@ -16,7 +16,7 @@ export async function createVideoInService(videoId, userName, title, description
             thumbnailUrl,
             uploadDate,
             duration,
-            likes: 0, // Initialize likes to 0
+            likes: 0,
             disLikes: 0,
             profilePicture,
             likesList : [],
@@ -86,7 +86,6 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
-
 export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
     try {
         const numericVideoId = Number(videoId); // Convert to number
@@ -122,6 +121,7 @@ export async function editVideo(userName, videoId, updatedTitle, updatedDescript
 }
 
 export async function getVideoById(videoId) {
+    console.log("video services Received videoId:", videoId, "\n");  // Debug log
     try {
         // Convert the ID to a number
         const numericVideoId = Number(videoId);
