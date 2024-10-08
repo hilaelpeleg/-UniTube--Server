@@ -1,10 +1,7 @@
 import * as userService from '../services/user.js';
 import path from 'path';
-import fs from 'fs';
-
 
 export async function getUser(req, res) {
-    console.log("getuserc", req.params.id);
     try {
         const user = await userService.getUser(req.params.id);
         if (!user) {
@@ -22,8 +19,17 @@ export async function createUser(req, res) {
         // Get the fields from the request body
         const { userName, firstName, lastName, password } = req.body;
 
-        // Get the profile picture file from req.file
-        const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
+        // Check if the user already exists
+        const existingUser = await userService.getUser(userName);
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
+
+        // Get the profile picture file from req.file, or use the default profile picture
+        const profilePicture = req.file 
+        ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/')
+        : '/profiles/default_profile_picture.png';  // Default picture if none is uploaded
+
 
         // Create a new user using the user service
         const newUser = await userService.createUser(userName, firstName, lastName, password, profilePicture);
@@ -50,6 +56,7 @@ export async function deleteUser(req, res) {
         res.status(500).json({ error: 'Failed to delete user' });
     }
 }
+
 
 export async function updateUser(req, res) {
     try {
@@ -87,21 +94,6 @@ export async function updateUser(req, res) {
         }
         console.log('User updated:', updatedUser);
 
-        // Check if new file was uploaded and remove the old file
-        if (req.file) {
-            if (req.file.profilePicture) {
-                console.log('New profile picture uploaded');
-                
-                // Remove the old profile picture file if it exists
-                if (fs.existsSync(oldPicFilePath)) {
-                    fs.unlinkSync(oldPicFilePath);
-                    console.log(`Deleted old profile picture: ${oldPicFilePath}`);
-                } else {
-                    console.log(`Old profile picture does not exist: ${oldPicFilePath}`);
-                }
-            }
-        }
-
         // Respond with the updated user details
         res.status(200).json(updatedUser);
     } catch (error) {
@@ -109,6 +101,7 @@ export async function updateUser(req, res) {
         res.status(500).json({ error: 'Failed to update user' });
     }
 }
+
 
 export default {
     getUser,
