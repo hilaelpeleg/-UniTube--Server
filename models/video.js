@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { type } from 'os';
 const Schema = mongoose.Schema;
 
 const videoSchema = new Schema({
@@ -34,7 +33,19 @@ const videoSchema = new Schema({
     },
     disLikes: {
         type: Number,
-        default: 0,
+        default: 0, // Initialize dislikes count
+    },
+    likesList: {
+        type: [String], // List of users who liked the video
+        default: [],
+    },
+    dislikesList: {
+        type: [String], // List of users who disliked the video
+        default: [],
+    },
+    views: { // Add this line
+        type: Number,
+        default: 0, // Initialize with a default value of 0
     },
     uploadDate: {
         type: String,
@@ -48,14 +59,6 @@ const videoSchema = new Schema({
         type: String,
         default: null,
     },
-    likesList: {
-        type: [String],
-        default: [],
-    },
-    dislikesList: {
-        type: [String],
-        default: [],
-    }
 });
 
 const Video = mongoose.model('Video', videoSchema, 'videos');

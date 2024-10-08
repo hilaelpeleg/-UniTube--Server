@@ -18,16 +18,29 @@ export async function initializeDatabase() {
 
                 // Set profile pictures to relative paths instead of Base64
                 for (let user of users) {
-                    const imagePath = `./public${user.profilePicture}`;
-
+                    const imagePath = `./public/${user.profilePicture}`;
+                
                     if (fs.existsSync(imagePath)) {
+                        let relativeimagePath = path.relative('./public', imagePath);
+                
+                        // Ensure the path starts with a "/"
+                        if (!relativeimagePath.startsWith('/')) {
+                            relativeimagePath = `/${relativeimagePath}`;
+                        }
+                
+                        user.profilePicture = relativeimagePath;
+                
                         // Save the relative path to the profile picture in the database
                         console.log(`Profile picture for ${user.userName} set successfully`);
                     } else {
                         console.error(`Image not found: ${imagePath}`);
                     }
+                
+                    // Save the user
+                    const newUser = new User(user);  // Changed variable name to avoid conflict
+                    await newUser.save();
+                    console.log(`User ${user.userName} saved successfully!`);
                 }
-                console.log('Inserted initial users with Base64 encoded profile pictures');
             } else {
                 console.error('User JSON file not found');
             }
