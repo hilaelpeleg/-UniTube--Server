@@ -4,7 +4,6 @@ import fs from 'fs';
 import Video from '../models/video.js'; 
 
 export async function getVideos(req, res) {
-    console.log("getvidecontroller");
     try {
         const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
         const featuredVideos = await Video.find({ featured: true }).limit(10);

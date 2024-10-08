@@ -1,4 +1,5 @@
 import * as userService from '../services/user.js';
+import * as commentService from '../services/comment.js';
 import path from 'path';
 
 export async function getUser(req, res) {
@@ -57,7 +58,6 @@ export async function deleteUser(req, res) {
     }
 }
 
-
 export async function updateUser(req, res) {
     try {
         console.log('Update user called');
@@ -94,6 +94,12 @@ export async function updateUser(req, res) {
         }
         console.log('User updated:', updatedUser);
 
+        // Update the profile picture in all comments made by this user
+        if (profilePicture) {
+            console.log("0000000000", profilePicture);
+            await commentService.updateCommentsWithProfilePicture(user.userName, profilePicture); // פונקציה שתעדכן את התמונות בתגובות
+        }
+
         // Respond with the updated user details
         res.status(200).json(updatedUser);
     } catch (error) {
@@ -107,5 +113,5 @@ export default {
     getUser,
     createUser,
     deleteUser,
-    updateUser
+    updateUser,
 };

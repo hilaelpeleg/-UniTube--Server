@@ -20,7 +20,6 @@ export async function createVideoInService(videoId, userName, title, description
             disLikes: 0, // Initialize dislikes to 0
             likesList: [], // Initialize likes list as an empty array
             dislikesList: [], // Initialize likes to 0
-            comments: [], // Initialize comments as an empty array
             profilePicture,
             views: 0,
 

@@ -41,9 +41,41 @@ export async function deleteComment(commentId) {
     }
 }
 
+export async function updateCommentsWithProfilePicture(userName, profilePicture) {
+    console.log("Updating profile picture for user:", userName, "with new picture:", profilePicture);
+    
+    try {
+        // מצא את כל התגובות של המשתמש לפני העדכון
+        const commentsBeforeUpdate = await Comment.find({ name: userName });
+        console.log("Comments before update:", commentsBeforeUpdate);
+
+        // עדכן את שדה התמונת פרופיל
+        const updateResult = await Comment.updateMany(
+            { name: userName }, 
+            { $set: { profilePicture: profilePicture } }
+        );
+
+        // בדוק אם הייתה עדכון
+        if (updateResult.modifiedCount > 0) {
+            console.log(`Updated profile picture for all comments by user: ${userName}`);
+        } else {
+            console.log(`No comments were updated for user: ${userName}`);
+        }
+
+        // מצא את כל התגובות של המשתמש אחרי העדכון
+        const commentsAfterUpdate = await Comment.find({ user: userName });
+        console.log("Comments after update:", commentsAfterUpdate);
+        
+    } catch (error) {
+        console.error('Failed to update comments profile picture:', error);
+    }
+}
+
+
 export default {
     getCommentsByVideoId,
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    updateCommentsWithProfilePicture
 };

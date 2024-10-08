@@ -60,10 +60,10 @@ export async function deleteUser(userName) {
 export async function updateUser(userName, firstName, lastName, password, profilePicture) {
     try {
         console.log(`updateUser called with: userName=${userName}, firstName=${firstName}, lastName=${lastName}, password=${password}`);
-        
+
         // Find the user by username
         const existingUser = await User.findOne({ userName: userName });
-        
+
         if (!existingUser) {
             console.log('User not found');
             throw new Error('User not found');
@@ -108,9 +108,11 @@ export async function updateUser(userName, firstName, lastName, password, profil
     }
 }
 
+
 export default {
     getUser,
     createUser,
     deleteUser,
-    updateUser
+    updateUser,
+    
 };
