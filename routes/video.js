@@ -4,6 +4,8 @@ import { validateToken } from '../models/token.js';
 const router = express.Router();
 
 router.get('/', videoController.getVideos);
+router.get('/highest-id', videoController.getHighestVideoId);
+
 router.post('/:pid/increment',videoController.incrementVideoViews)
 
 // update likes

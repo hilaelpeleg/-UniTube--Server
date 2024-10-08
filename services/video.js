@@ -20,7 +20,6 @@ export async function createVideoInService(videoId, userName, title, description
             disLikes: 0, // Initialize dislikes to 0
             likesList: [], // Initialize likes list as an empty array
             dislikesList: [], // Initialize likes to 0
-            comments: [], // Initialize comments as an empty array
             profilePicture,
             views: 0,
 
@@ -55,8 +54,8 @@ export async function deleteVideo(userName, videoId) {
         const numericVideoId = Number(videoId);
         console.log('Numeric Video ID:', numericVideoId);
 
-        // Find the video by its numeric ID and populate comments
-        const video = await Video.findOne({ id: numericVideoId }).populate('comments');
+        // Find the video by its numeric ID
+        const video = await Video.findOne({ id: numericVideoId });
         console.log('Video found:', video);
 
         // Check if the video exists
@@ -72,9 +71,8 @@ export async function deleteVideo(userName, videoId) {
         // Delete the video from the database
         await Video.findOneAndDelete({ id: numericVideoId });
 
-        // Get the IDs of the comments associated with the video
-        const commentIds = video.comments.map(comment => comment._id);
-        await Comment.deleteMany({ _id: { $in: commentIds } });
+        // Delete comments associated with the video directly using videoId
+        await Comment.deleteMany({ videoId: numericVideoId }); // Assuming 'videoId' is the field in your comment schema
 
         // Define the paths for the video and thumbnail files
         const videoFilePath = path.join('public', video.url);
@@ -102,6 +100,7 @@ export async function deleteVideo(userName, videoId) {
         return false;
     }
 }
+
 
 
 export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
@@ -156,6 +155,7 @@ export async function getVideoById(videoId) {
         return { code: 500, error: "Failed to fetch video" };
     }
 }
+
 export async function getUserVideos(userName) {
     try {
         // Find videos by uploader's name
@@ -196,6 +196,54 @@ export const updateLikesById = async (videoId, newLikes) => {
     }
 };
 
+export async function updateVideosProfilePicture(userName, profilePicture) {
+    try {
+        // מצא את כל הסרטונים של המשתמש לפני העדכון
+        const videosBeforeUpdate = await Video.find({ uploader: userName });
+        console.log("Videos before update:", videosBeforeUpdate);
+
+        // עדכן את שדה התמונת פרופיל
+        const updateResult = await Video.updateMany(
+            { uploader: userName }, // מצא את כל הסרטונים של המשתמש
+            { $set: { profilePicture: profilePicture } } // עדכן את שדה התמונת פרופיל
+        );
+
+        // בדוק אם הייתה עדכון
+        if (updateResult.modifiedCount > 0) {
+            console.log(`Updated profile picture for all videos uploaded by user: ${userName}`);
+        } else {
+            console.log(`No videos were updated for user: ${userName}`);
+        }
+
+        // מצא את כל הסרטונים של המשתמש אחרי העדכון
+        const videosAfterUpdate = await Video.find({ uploader: userName });
+        console.log("Videos after update:", videosAfterUpdate);
+        
+    } catch (error) {
+        console.error('Failed to update videos profile picture:', error);
+    }
+}
+
+export async function deleteVideosByUser(userName) {
+    try {
+        // קח את כל הסרטונים של המשתמש
+        const videos = await Video.find({ uploader: userName });
+
+        // מחק כל סרטון על ידי קריאה לפונקציה deleteVideo
+        for (const video of videos) {
+            const success = await deleteVideo(userName, video.id);
+            if (!success) {
+                console.error(`Failed to delete video with ID: ${video.id}`);
+            }
+        }
+
+        console.log(`Deleted ${videos.length} videos for user: ${userName}`);
+    } catch (error) {
+        console.error('Failed to delete videos:', error);
+        throw error; // דחוף את השגיאה למעלה
+    }
+}
+
 export default {
     getAllVideos,
     createVideoInService,
@@ -204,5 +252,7 @@ export default {
     getVideoById,
     getUserVideos,
     updateLikesById,
-    incrementViewsById
+    incrementViewsById,
+    updateVideosProfilePicture,
+    deleteVideosByUser
 };

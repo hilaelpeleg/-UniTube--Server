@@ -47,10 +47,6 @@ const videoSchema = new Schema({
         type: Number,
         default: 0, // Initialize with a default value of 0
     },
-    comments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Comment',
-    }],
     uploadDate: {
         type: String,
         default: Date.now,
