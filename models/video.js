@@ -31,6 +31,18 @@ const videoSchema = new Schema({
         type: Number,
         default: 0,
     },
+    disLikes: {
+        type: Number,
+        default: 0, // Initialize dislikes count
+    },
+    likesList: {
+        type: [String], // List of users who liked the video
+        default: [],
+    },
+    dislikesList: {
+        type: [String], // List of users who disliked the video
+        default: [],
+    },
     views: { // Add this line
         type: Number,
         default: 0, // Initialize with a default value of 0
@@ -51,11 +63,6 @@ const videoSchema = new Schema({
         type: String,
         default: null,
     },
-    likesList: {
-        type: [String], // List of usernames who liked the video
-        default: [],
-    },
-
 });
 
 const Video = mongoose.model('Video', videoSchema, 'videos');

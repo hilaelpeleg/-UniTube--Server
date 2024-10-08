@@ -182,28 +182,18 @@ export async function deleteVideo(req, res) {
 
 export const updateVideoLikes = async (req, res) => {
     const videoId = req.params.pid; // Get video ID from request parameters
-    const userName = req.user.userName; // Get the logged-in user's username
+    const newLikes = req.body.likes; // Get new likes count from request body
     try {
-        // Fetch the current video using the service
-        const video = await videoServices.updateLikesById(videoId, userName);
-        
-        // Check if the user has already liked the video
-        if (video.likesList.includes(userName)) {
-            return res.status(400).json({ error: 'User has already liked this video' });
+        const updatedVideo = await videoServices.updateLikesById(videoId, newLikes); // Call the service to update likes
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' }); // Return 404 if video not found
         }
-
-        // Update the likes and likesList
-        video.likes += 1; // Increment likes
-        video.likesList.push(userName); // Add the user to the likes list
-        await video.save(); // Save changes
-
-        res.json(video); // Return the updated video
+        res.json(updatedVideo); // Return the updated video
     } catch (error) {
-        console.error('Error updating video likes:', error);
+        console.error('Error updating video likes:', error); // Log the error
         res.status(500).json({ error: 'Could not update likes' }); // Return server error
     }
 };
-
 
 export async function getVideoById(req, res) {
     try {

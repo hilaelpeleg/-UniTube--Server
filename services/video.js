@@ -17,10 +17,13 @@ export async function createVideoInService(videoId, userName, title, description
             uploadDate,
             duration,
             likes: 0, // Initialize likes to 0
+            disLikes: 0, // Initialize dislikes to 0
+            likesList: [], // Initialize likes list as an empty array
+            dislikesList: [], // Initialize likes to 0
             comments: [], // Initialize comments as an empty array
             profilePicture,
             views: 0,
-            likesList: []
+
         });
 
         // Save the video and update the user
@@ -184,21 +187,14 @@ export async function getAllVideos() {
 }
 
 // Service function to update video likes
-export const updateLikesById = async (videoId, userName) => {
+export const updateLikesById = async (videoId, newLikes) => {
     try {
-        // Find the video by its ID
-        const video = await Video.findOne({ id: videoId });
-        
-        if (!video) {
-            throw new Error('Video not found'); // Return an error if video not found
-        }
-
-        return video; // Return the video object for further processing in the controller
+        const video = await Video.findOneAndUpdate({ id: videoId }, { likes: newLikes }, { new: true }); // Update video likes
+        return video; // Return updated video
     } catch (error) {
-        throw new Error('Could not fetch video'); // Throw an error if fetching fails
+        throw new Error('Could not update likes'); // Throw an error if update fails
     }
 };
-
 
 export default {
     getAllVideos,
