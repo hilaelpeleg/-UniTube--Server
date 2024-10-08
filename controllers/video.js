@@ -25,6 +25,17 @@ export async function getVideos(req, res) {
     }
 }
 
+export async function getHighestVideoId(req, res) {
+    try {
+        const highestVideo = await Video.findOne({}, {}, { sort: { id: -1 } }); // חפש את הסרטון האחרון לפי ID
+        const highestId = highestVideo ? highestVideo.id : 0; // אם יש סרטונים, קח את ה-ID הגבוה, אחרת חזור על 0
+        res.status(200).json({ highestId }); // החזר את ה-ID הגבוה
+    } catch (error) {
+        console.error('Error fetching highest video ID:', error);
+        res.status(500).json({ error: 'Failed to fetch highest video ID' });
+    }
+}
+
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
     try {
@@ -40,7 +51,9 @@ export async function incrementVideoViews(req, res) {
         res.status(500).json({ error: 'Failed to increment views' });
     }
 }
+
 export async function createVideo(req, res) {
+    console.log("createvideo controller");
     try {
         const { title, description, uploadDate, duration } = req.body;
         const userName = req.params.id; // Get the uploader's username from the URL
@@ -214,5 +227,6 @@ export default {
     deleteVideo,
     updateVideoLikes,
     getVideoById,
-    incrementVideoViews
+    incrementVideoViews,
+    getHighestVideoId
 };
