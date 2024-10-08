@@ -51,6 +51,10 @@ const videoSchema = new Schema({
         type: String,
         default: null,
     },
+    likesList: {
+        type: [String], // List of usernames who liked the video
+        default: [],
+    },
 
 });
 
