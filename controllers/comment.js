@@ -19,6 +19,7 @@ export async function createComment(req, res) {
 }
 
 export async function updateComment(req, res) {
+    console.log("doyomami");
     try {
         const updatedComment = await commentServices.updateComment(req.params.id, req.body);
         if (!updatedComment) {
