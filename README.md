@@ -111,6 +111,11 @@ The following key packages are used in the project:
 - **CORS**: Enables Cross-Origin Resource Sharing.
 - **body-parser**: Parses incoming request bodies.
 
+Make sure to install the necessary dependencies for the project, which you can do all at once using the command:
+```bash
+ npm install express mongoose multer cors body-parser custom-env.
+ ```
+ 
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
