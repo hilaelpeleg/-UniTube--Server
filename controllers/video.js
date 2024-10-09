@@ -219,6 +219,36 @@ export async function getVideoById(req, res) {
     }
 }
 
+
+
+// Controller function to update video duration
+export async function updateVideoDuration(req, res) {
+    console.log("Updating video duration...");
+    try {
+        const videoId = req.params.pid; // Get the videoId from the URL
+        const { duration } = req.body; // Get the duration from the request body
+
+        // Validate that duration is provided in the request
+        if (!duration) {
+            return res.status(400).json({ error: 'Duration is required' });
+        }
+
+        // Call the service to update the video duration in the database
+        const updatedVideo = await videoServices.updateVideoDurationInService(videoId, duration);
+
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+
+        // Return the updated video data in the response
+        res.status(200).json(updatedVideo); 
+    } catch (error) {
+        console.error('Error updating video duration:', error);
+        // Respond with a server error in case of failure
+        res.status(500).json({ error: 'Server error' });
+    }
+}
+
 export default {
     getVideos,
     getUserVideos,
@@ -228,5 +258,6 @@ export default {
     updateVideoLikes,
     getVideoById,
     incrementVideoViews,
-    getHighestVideoId
+    getHighestVideoId,
+    updateVideoDuration
 };
