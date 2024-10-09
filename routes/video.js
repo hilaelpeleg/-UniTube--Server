@@ -6,7 +6,9 @@ const router = express.Router();
 router.get('/', videoController.getVideos);
 router.get('/highest-id', videoController.getHighestVideoId);
 
-router.post('/:pid/increment',videoController.incrementVideoViews)
+router.post('/:pid/increment',videoController.incrementVideoViews);
+router.put('/:pid', videoController.updateVideoDuration);
+
 
 // update likes
 router.put('/:pid', validateToken, videoController.updateVideoLikes);

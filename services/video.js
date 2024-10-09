@@ -315,6 +315,27 @@ export async function deleteVideosByUser(userName) {
     }
 }
 
+
+// Service function to update video duration in the database
+export async function updateVideoDurationInService(videoId, duration) {
+    try {
+        // Convert the videoId to a number
+        const numericVideoId = Number(videoId); // Ensure videoId is treated as a number
+
+        // Find the video by its numeric id and update its duration
+        const updatedVideo = await Video.findOneAndUpdate(
+            { id: numericVideoId }, // Find the video by the custom 'id' field (number)
+            { duration },            // Update the duration
+            { new: true }            // Return the updated document after update
+        );
+
+        return updatedVideo; // Return the updated video object
+    } catch (error) {
+        console.error('Error updating video duration in service:', error);
+        throw new Error('Failed to update video duration in DB');
+    }
+}
+
 export default {
     getAllVideos,
     createVideoInService,
@@ -327,5 +348,6 @@ export default {
     toggleLike,
     toggleDislike,
     updateVideosProfilePicture,
-    deleteVideosByUser
+    deleteVideosByUser,
+    updateVideoDurationInService
 };
