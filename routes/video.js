@@ -11,7 +11,7 @@ router.put('/:pid', videoController.updateVideoDuration);
 
 
 // update likes
-router.put('/:pid', validateToken, videoController.updateVideoLikes);
+router.put('/:pid/like', validateToken, videoController.updateVideoLikes);
 
 
 router.post('/:videoId/like', videoController.toggleLike);
