@@ -26,11 +26,6 @@ export async function createUser(userName, firstName, lastName, password, profil
     }
 }
 
-export const checkUserNameExists = async (userName) => {
-    const user = await User.findOne({ userName });
-    return !!user;
-  };
-
 // Delete a user by username
 export async function deleteUser(userName) {
     try {
@@ -65,10 +60,10 @@ export async function deleteUser(userName) {
 export async function updateUser(userName, firstName, lastName, password, profilePicture) {
     try {
         console.log(`updateUser called with: userName=${userName}, firstName=${firstName}, lastName=${lastName}, password=${password}`);
-        
+
         // Find the user by username
         const existingUser = await User.findOne({ userName: userName });
-        
+
         if (!existingUser) {
             console.log('User not found');
             throw new Error('User not found');
@@ -76,21 +71,35 @@ export async function updateUser(userName, firstName, lastName, password, profil
 
         console.log('User found:', existingUser);
 
+        // Store the path to the old profile picture before updating it
+        const oldProfilePicture = existingUser.profilePicture;
+
         // Update fields, using previous values if new ones are not provided
         existingUser.firstName = firstName !== undefined ? firstName : existingUser.firstName;
         existingUser.lastName = lastName !== undefined ? lastName : existingUser.lastName;
         existingUser.password = password !== undefined ? password : existingUser.password;
 
         // Handle profile picture upload (if a new file is provided)
-        if (profilePicture && profilePicture.path) {  // בדיקה אם יש קובץ תמונה והאם יש מאפיין path
+        if (profilePicture) {  // בדיקה אם יש קובץ תמונה והאם יש מאפיין path
             console.log('Profile picture received:', profilePicture.path);
-            existingUser.profilePicture = '/' + profilePicture.path.replace(/\\/g, '/').replace(/^public[\/]/, '');
+            existingUser.profilePicture = profilePicture;  // Directly use the provided profile picture path
             console.log('Updating profile picture');
         }
 
         // Save the updated user to the database
         await existingUser.save();
         console.log('User updated successfully:', existingUser);
+
+        // Check if there's an old profile picture, and it isn't the default one
+        if (oldProfilePicture && oldProfilePicture !== '/profiles/default_profile_picture.png') {
+            const oldPicFilePath = path.join('public', oldProfilePicture);
+            if (fs.existsSync(oldPicFilePath)) {
+                fs.unlinkSync(oldPicFilePath); // Delete the old profile picture
+                console.log(`Deleted old profile picture: ${oldPicFilePath}`);
+            } else {
+                console.log(`Old profile picture does not exist: ${oldPicFilePath}`);
+            }
+        }
 
         return existingUser;  // Return the updated user
     } catch (error) {
@@ -99,10 +108,11 @@ export async function updateUser(userName, firstName, lastName, password, profil
     }
 }
 
+
 export default {
     getUser,
     createUser,
-    checkUserNameExists,
     deleteUser,
-    updateUser
+    updateUser,
+    
 };

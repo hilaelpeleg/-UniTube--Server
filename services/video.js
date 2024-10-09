@@ -20,10 +20,8 @@ export async function createVideoInService(videoId, userName, title, description
             disLikes: 0, // Initialize dislikes to 0
             likesList: [], // Initialize likes list as an empty array
             dislikesList: [], // Initialize likes to 0
-            comments: [], // Initialize comments as an empty array
             profilePicture,
             views: 0,
-
         });
 
         // Save the video and update the user
@@ -55,8 +53,8 @@ export async function deleteVideo(userName, videoId) {
         const numericVideoId = Number(videoId);
         console.log('Numeric Video ID:', numericVideoId);
 
-        // Find the video by its numeric ID and populate comments
-        const video = await Video.findOne({ id: numericVideoId }).populate('comments');
+        // Find the video by its numeric ID
+        const video = await Video.findOne({ id: numericVideoId });
         console.log('Video found:', video);
 
         // Check if the video exists
@@ -72,9 +70,8 @@ export async function deleteVideo(userName, videoId) {
         // Delete the video from the database
         await Video.findOneAndDelete({ id: numericVideoId });
 
-        // Get the IDs of the comments associated with the video
-        const commentIds = video.comments.map(comment => comment._id);
-        await Comment.deleteMany({ _id: { $in: commentIds } });
+        // Delete comments associated with the video directly using videoId
+        await Comment.deleteMany({ videoId: numericVideoId }); // Assuming 'videoId' is the field in your comment schema
 
         // Define the paths for the video and thumbnail files
         const videoFilePath = path.join('public', video.url);
@@ -102,6 +99,7 @@ export async function deleteVideo(userName, videoId) {
         return false;
     }
 }
+
 
 
 export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
@@ -282,5 +280,7 @@ export default {
     updateLikesById,
     incrementViewsById,
     toggleLike,
-    toggleDislike
+    toggleDislike,
+    updateVideosProfilePicture,
+    deleteVideosByUser
 };
