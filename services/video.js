@@ -22,7 +22,6 @@ export async function createVideoInService(videoId, userName, title, description
             dislikesList: [], // Initialize likes to 0
             profilePicture,
             views: 0,
-
         });
 
         // Save the video and update the user
@@ -101,8 +100,6 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
-
-
 export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
     try {
         const numericVideoId = Number(videoId); // Convert to number
@@ -155,7 +152,6 @@ export async function getVideoById(videoId) {
         return { code: 500, error: "Failed to fetch video" };
     }
 }
-
 export async function getUserVideos(userName) {
     try {
         // Find videos by uploader's name
@@ -195,6 +191,81 @@ export const updateLikesById = async (videoId, newLikes) => {
         throw new Error('Could not update likes'); // Throw an error if update fails
     }
 };
+
+export async function toggleLike(videoId, userName) {
+    try {
+      const video = await Video.findOne({ id: Number(videoId) });
+      if (!video) {
+        return { code: 404, error: "Video not found!" };
+      }
+  
+      const userIndex = video.likesList.indexOf(userName);
+      if (userIndex > -1) {
+        // User has already liked, so remove the like
+        video.likesList.splice(userIndex, 1);
+        video.likes--;
+      } else {
+        // User hasn't liked, so add the like
+        video.likesList.push(userName);
+        video.likes++;
+        // Remove from dislikes if present
+        const dislikeIndex = video.dislikesList.indexOf(userName);
+        if (dislikeIndex > -1) {
+          video.dislikesList.splice(dislikeIndex, 1);
+          video.dislikes--;
+        }
+      }
+  
+      await video.save();
+      return video;
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      return { code: 500, error: "Failed to toggle like" };
+    }
+}
+  
+export async function toggleDislike(videoId, userName) {
+    console.log("toggleDislike called with videoId:", videoId, "and userName:", userName);
+
+    try {
+        const numericVideoId = Number(videoId);
+        console.log("Converted videoId to number:", numericVideoId);
+
+        const video = await Video.findOne({ id: numericVideoId });
+        if (!video) {
+            console.log("Video not found with ID:", numericVideoId);
+            return { code: 404, error: "Video not found!" };
+        }
+        console.log("Video found:", video.title);
+
+        const userIndex = video.dislikesList.indexOf(userName);
+        if (userIndex > -1) {
+            // User has already disliked, so remove the dislike
+            console.log(`${userName} already disliked the video. Removing dislike.`);
+            video.dislikesList.splice(userIndex, 1);
+            video.disLikes--;
+        } else {
+            // User hasn't disliked, so add the dislike
+            console.log(`${userName} has not disliked the video. Adding dislike.`);
+            video.dislikesList.push(userName);
+            video.disLikes++;
+            // Remove from likes if present
+            const likeIndex = video.likesList.indexOf(userName);
+            if (likeIndex > -1) {
+                console.log(`${userName} also liked the video. Removing like.`);
+                video.likesList.splice(likeIndex, 1);
+                video.likes--;
+            }
+        }
+
+        await video.save();
+        console.log("Video saved successfully with updated dislikes and likes.");
+        return video;
+    } catch (error) {
+        console.error("Error toggling dislike:", error);
+        return { code: 500, error: "Failed to toggle dislike" };
+    }
+}
 
 export async function updateVideosProfilePicture(userName, profilePicture) {
     try {
@@ -274,6 +345,8 @@ export default {
     getUserVideos,
     updateLikesById,
     incrementViewsById,
+    toggleLike,
+    toggleDislike,
     updateVideosProfilePicture,
     deleteVideosByUser,
     updateVideoDurationInService

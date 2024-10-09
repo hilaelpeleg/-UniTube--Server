@@ -4,6 +4,7 @@ import fs from 'fs';
 import Video from '../models/video.js'; 
 
 export async function getVideos(req, res) {
+    console.log("getvidecontroller");
     try {
         const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
         const featuredVideos = await Video.find({ featured: true }).limit(10);
@@ -51,7 +52,6 @@ export async function incrementVideoViews(req, res) {
         res.status(500).json({ error: 'Failed to increment views' });
     }
 }
-
 export async function createVideo(req, res) {
     console.log("createvideo controller");
     try {
@@ -219,7 +219,55 @@ export async function getVideoById(req, res) {
     }
 }
 
+export async function toggleLike(req, res) {
+    try {
+      const { videoId } = req.params;
+      const { userName } = req.body;
 
+      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+
+      // Check if userName is provided
+      if (!userName) {
+        return res.status(400).json({ error: "userName is required" });
+      }
+      
+      const result = await videoServices.toggleLike(videoId, userName);
+      
+      if (result.code) {
+        return res.status(result.code).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error in toggleLike controller:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+}
+  
+export const toggleDislike = async (req, res) => {
+    try {
+      const { videoId } = req.params;
+      const { userName } = req.body;
+  
+      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+  
+      // Check if userName is provided
+      if (!userName) {
+        return res.status(400).json({ error: "userName is required" });
+      }
+  
+      const result = await videoServices.toggleDislike(videoId, userName);
+      
+      if (result.code) {
+        return res.status(result.code).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error in toggleDislike controller:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 // Controller function to update video duration
 export async function updateVideoDuration(req, res) {
@@ -258,6 +306,8 @@ export default {
     updateVideoLikes,
     getVideoById,
     incrementVideoViews,
+    toggleLike,
+    toggleDislike,
     getHighestVideoId,
     updateVideoDuration
 };

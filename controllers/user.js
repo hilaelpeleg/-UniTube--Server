@@ -67,7 +67,6 @@ export async function deleteUser(req, res) {
     }
 }
 
-
 export async function updateUser(req, res) {
     try {
         console.log('Update user called');
@@ -118,7 +117,6 @@ export async function updateUser(req, res) {
         res.status(500).json({ error: 'Failed to update user' });
     }
 }
-
 
 export default {
     getUser,
