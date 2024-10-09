@@ -267,8 +267,7 @@ export const toggleDislike = async (req, res) => {
       console.error("Error in toggleDislike controller:", error);
       res.status(500).json({ error: "Internal server error" });
     }
-  };
-
+};
 
 // Controller function to update video duration
 export async function updateVideoDuration(req, res) {
