@@ -1,7 +1,7 @@
 import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
-import Video from '../models/video.js'; 
+import Video from '../models/video.js';
 
 export async function getVideos(req, res) {
     console.log("getvidecontroller");
@@ -68,11 +68,11 @@ export async function createVideo(req, res) {
         let url = req.files.url[0].path; // Get the video file path from Multer
         let thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
 
-         // Remove the "public/" from the paths
-         url = url.replace(/^public[\\/]/, '');  // Use regex to remove 'public/' at the start of the path
-         thumbnailUrl = thumbnailUrl.replace(/^public[\\/]/, '');  // Same for thumbnail
+        // Remove the "public/" from the paths
+        url = url.replace(/^public[\\/]/, '');  // Use regex to remove 'public/' at the start of the path
+        thumbnailUrl = thumbnailUrl.replace(/^public[\\/]/, '');  // Same for thumbnail
 
-         // Ensure paths start with a '/'
+        // Ensure paths start with a '/'
         url = url.startsWith('/') ? url : '/' + url;
         thumbnailUrl = thumbnailUrl.startsWith('/') ? thumbnailUrl : '/' + thumbnailUrl;
 
@@ -117,7 +117,7 @@ export async function editVideo(req, res) {
 
         // Fetch the existing video details
         const video = await videoServices.getVideoById(videoId);
-        
+
         if (!video) {
             return res.status(404).json({ error: 'Video not found' });
         }
@@ -194,7 +194,9 @@ export async function deleteVideo(req, res) {
 
 export const updateVideoLikes = async (req, res) => {
     const videoId = req.params.pid; // Get video ID from request parameters
-    const newLikes = req.body.likes; // Get new likes count from request body
+    const newLikes = Number(req.body.likes); // Get new likes count from request body
+    console.log("mygod", newLikes, videoId);
+
     try {
         const updatedVideo = await videoServices.updateLikesById(videoId, newLikes); // Call the service to update likes
         if (!updatedVideo) {
@@ -221,51 +223,51 @@ export async function getVideoById(req, res) {
 
 export async function toggleLike(req, res) {
     try {
-      const { videoId } = req.params;
-      const { userName } = req.body;
+        const { videoId } = req.params;
+        const { userName } = req.body;
 
-      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+        console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
 
-      // Check if userName is provided
-      if (!userName) {
-        return res.status(400).json({ error: "userName is required" });
-      }
-      
-      const result = await videoServices.toggleLike(videoId, userName);
-      
-      if (result.code) {
-        return res.status(result.code).json({ error: result.error });
-      }
-      
-      res.json(result);
+        // Check if userName is provided
+        if (!userName) {
+            return res.status(400).json({ error: "userName is required" });
+        }
+
+        const result = await videoServices.toggleLike(videoId, userName);
+
+        if (result.code) {
+            return res.status(result.code).json({ error: result.error });
+        }
+
+        res.json(result);
     } catch (error) {
-      console.error("Error in toggleLike controller:", error);
-      res.status(500).json({ error: "Internal server error" });
+        console.error("Error in toggleLike controller:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 }
-  
+
 export const toggleDislike = async (req, res) => {
     try {
-      const { videoId } = req.params;
-      const { userName } = req.body;
-  
-      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
-  
-      // Check if userName is provided
-      if (!userName) {
-        return res.status(400).json({ error: "userName is required" });
-      }
-  
-      const result = await videoServices.toggleDislike(videoId, userName);
-      
-      if (result.code) {
-        return res.status(result.code).json({ error: result.error });
-      }
-      
-      res.json(result);
+        const { videoId } = req.params;
+        const { userName } = req.body;
+
+        console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+
+        // Check if userName is provided
+        if (!userName) {
+            return res.status(400).json({ error: "userName is required" });
+        }
+
+        const result = await videoServices.toggleDislike(videoId, userName);
+
+        if (result.code) {
+            return res.status(result.code).json({ error: result.error });
+        }
+
+        res.json(result);
     } catch (error) {
-      console.error("Error in toggleDislike controller:", error);
-      res.status(500).json({ error: "Internal server error" });
+        console.error("Error in toggleDislike controller:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
@@ -289,7 +291,7 @@ export async function updateVideoDuration(req, res) {
         }
 
         // Return the updated video data in the response
-        res.status(200).json(updatedVideo); 
+        res.status(200).json(updatedVideo);
     } catch (error) {
         console.error('Error updating video duration:', error);
         // Respond with a server error in case of failure
