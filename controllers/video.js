@@ -1,17 +1,46 @@
 import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
-
+import Video from '../models/video.js'; 
 
 export async function getVideos(req, res) {
+    console.log("getvidecontroller");
     try {
-        const videos = await videoServices.getAllVideos();
-        res.json(videos);
+        const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
+        const featuredVideos = await Video.find({ featured: true }).limit(10);
+
+        const popularVideoIds = new Set(popularVideos.map(video => video.id));
+
+        const uniqueFeaturedVideos = featuredVideos.filter(video => !popularVideoIds.has(video.id));
+
+        const allVideos = [...popularVideos, ...uniqueFeaturedVideos];
+
+        if (allVideos.length < 20) {
+            return res.json(allVideos);
+        }
+
+        res.json(allVideos);
     } catch (error) {
+        console.error("Error fetching videos:", error);
         res.status(500).json({ error: 'Failed to fetch videos' });
     }
 }
 
+export async function incrementVideoViews(req, res) {
+    const videoId = req.params.pid; // Get the ID from the params
+    try {
+        const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
+
+        if (!updatedVideo) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+
+        res.json(updatedVideo); // Return the updated video
+    } catch (error) {
+        console.error('Error incrementing views:', error);
+        res.status(500).json({ error: 'Failed to increment views' });
+    }
+}
 export async function createVideo(req, res) {
     try {
         const { title, description, uploadDate, duration } = req.body;
@@ -53,7 +82,6 @@ export async function createVideo(req, res) {
 }
 
 export async function getUserVideos(req, res) {
-    console.log("getusersvcont");
     try {
         // Call the service to get videos by uploader's name
         const videos = await videoServices.getUserVideos(req.params.id);
@@ -179,6 +207,56 @@ export async function getVideoById(req, res) {
     }
 }
 
+export async function toggleLike(req, res) {
+    try {
+      const { videoId } = req.params;
+      const { userName } = req.body;
+
+      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+
+      // Check if userName is provided
+      if (!userName) {
+        return res.status(400).json({ error: "userName is required" });
+      }
+      
+      const result = await videoServices.toggleLike(videoId, userName);
+      
+      if (result.code) {
+        return res.status(result.code).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error in toggleLike controller:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+}
+  
+export const toggleDislike = async (req, res) => {
+    try {
+      const { videoId } = req.params;
+      const { userName } = req.body;
+  
+      console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
+  
+      // Check if userName is provided
+      if (!userName) {
+        return res.status(400).json({ error: "userName is required" });
+      }
+  
+      const result = await videoServices.toggleDislike(videoId, userName);
+      
+      if (result.code) {
+        return res.status(result.code).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error in toggleDislike controller:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+
 export default {
     getVideos,
     getUserVideos,
@@ -186,5 +264,8 @@ export default {
     createVideo,
     deleteVideo,
     updateVideoLikes,
-    getVideoById
+    getVideoById,
+    incrementVideoViews,
+    toggleLike,
+    toggleDislike
 };

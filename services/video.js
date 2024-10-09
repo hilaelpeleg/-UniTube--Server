@@ -16,11 +16,14 @@ export async function createVideoInService(videoId, userName, title, description
             thumbnailUrl,
             uploadDate,
             duration,
-            likes: 0,
-            disLikes: 0,
+            likes: 0, // Initialize likes to 0
+            disLikes: 0, // Initialize dislikes to 0
+            likesList: [], // Initialize likes list as an empty array
+            dislikesList: [], // Initialize likes to 0
+            comments: [], // Initialize comments as an empty array
             profilePicture,
-            likesList : [],
-            dislikesList: []
+            views: 0,
+
         });
 
         // Save the video and update the user
@@ -30,6 +33,20 @@ export async function createVideoInService(videoId, userName, title, description
     } catch (error) {
         console.error("Error creating video:", error);
         return null;
+    }
+}
+
+export async function incrementViewsById(videoId) {
+    try {
+        // Increment the views for the video with the given ID
+        return await Video.findOneAndUpdate(
+            { id: videoId }, // Search by your ID
+            { $inc: { views: 1 } }, // Increment the views field by 1
+            { new: true } // Return the updated document
+        );
+    } catch (error) {
+        console.error('Error updating views:', error);
+        throw error; // Throw the error to be handled in the controller
     }
 }
 
@@ -86,6 +103,7 @@ export async function deleteVideo(userName, videoId) {
     }
 }
 
+
 export async function editVideo(userName, videoId, updatedTitle, updatedDescription, files, existingVideo) {
     try {
         const numericVideoId = Number(videoId); // Convert to number
@@ -121,7 +139,6 @@ export async function editVideo(userName, videoId, updatedTitle, updatedDescript
 }
 
 export async function getVideoById(videoId) {
-    console.log("video services Received videoId:", videoId, "\n");  // Debug log
     try {
         // Convert the ID to a number
         const numericVideoId = Number(videoId);
@@ -139,19 +156,18 @@ export async function getVideoById(videoId) {
         return { code: 500, error: "Failed to fetch video" };
     }
 }
-
 export async function getUserVideos(userName) {
     try {
-        // Find the user by username and populate their videos
-        const user = await User.findOne({ userName }).populate('videos');
+        // Find videos by uploader's name
+        const videos = await Video.find({ uploader: userName });
 
-        // If the user is not found, return a 404 error
-        if (!user) {
-            return { code: 404, error: "User not found!" };
+        // If no videos are found, return a 404 error
+        if (!videos || videos.length === 0) {
+            return { code: 404, error: "No videos found for this user" };
         }
 
         // Return the user's videos
-        return user.videos;
+        return videos;
     } catch (error) {
         // Log the error and return a 500 internal server error
         console.error("Error fetching user videos:", error);
@@ -180,6 +196,82 @@ export const updateLikesById = async (videoId, newLikes) => {
     }
 };
 
+export async function toggleLike(videoId, userName) {
+    try {
+      const video = await Video.findOne({ id: Number(videoId) });
+      if (!video) {
+        return { code: 404, error: "Video not found!" };
+      }
+  
+      const userIndex = video.likesList.indexOf(userName);
+      if (userIndex > -1) {
+        // User has already liked, so remove the like
+        video.likesList.splice(userIndex, 1);
+        video.likes--;
+      } else {
+        // User hasn't liked, so add the like
+        video.likesList.push(userName);
+        video.likes++;
+        // Remove from dislikes if present
+        const dislikeIndex = video.dislikesList.indexOf(userName);
+        if (dislikeIndex > -1) {
+          video.dislikesList.splice(dislikeIndex, 1);
+          video.dislikes--;
+        }
+      }
+  
+      await video.save();
+      return video;
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      return { code: 500, error: "Failed to toggle like" };
+    }
+}
+  
+export async function toggleDislike(videoId, userName) {
+    console.log("toggleDislike called with videoId:", videoId, "and userName:", userName);
+
+    try {
+        const numericVideoId = Number(videoId);
+        console.log("Converted videoId to number:", numericVideoId);
+
+        const video = await Video.findOne({ id: numericVideoId });
+        if (!video) {
+            console.log("Video not found with ID:", numericVideoId);
+            return { code: 404, error: "Video not found!" };
+        }
+        console.log("Video found:", video.title);
+
+        const userIndex = video.dislikesList.indexOf(userName);
+        if (userIndex > -1) {
+            // User has already disliked, so remove the dislike
+            console.log(`${userName} already disliked the video. Removing dislike.`);
+            video.dislikesList.splice(userIndex, 1);
+            video.disLikes--;
+        } else {
+            // User hasn't disliked, so add the dislike
+            console.log(`${userName} has not disliked the video. Adding dislike.`);
+            video.dislikesList.push(userName);
+            video.disLikes++;
+            // Remove from likes if present
+            const likeIndex = video.likesList.indexOf(userName);
+            if (likeIndex > -1) {
+                console.log(`${userName} also liked the video. Removing like.`);
+                video.likesList.splice(likeIndex, 1);
+                video.likes--;
+            }
+        }
+
+        await video.save();
+        console.log("Video saved successfully with updated dislikes and likes.");
+        return video;
+    } catch (error) {
+        console.error("Error toggling dislike:", error);
+        return { code: 500, error: "Failed to toggle dislike" };
+    }
+}
+
+
 export default {
     getAllVideos,
     createVideoInService,
@@ -187,5 +279,8 @@ export default {
     editVideo,
     getVideoById,
     getUserVideos,
-    updateLikesById
+    updateLikesById,
+    incrementViewsById,
+    toggleLike,
+    toggleDislike
 };
