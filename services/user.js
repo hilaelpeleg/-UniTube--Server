@@ -2,10 +2,12 @@ import User from '../models/user.js';
 import fs from 'fs';
 import path from 'path';
 
+// get user by username
 export async function getUser(userName) {
     return await User.findOne({ userName: userName });
 }
 
+// create new user
 export async function createUser(userName, firstName, lastName, password, profilePicture) {
     try {
         // Create a new user object
@@ -57,6 +59,7 @@ export async function deleteUser(userName) {
     }
 }
 
+// update user fields. found by username
 export async function updateUser(userName, firstName, lastName, password, profilePicture) {
     try {
         console.log(`updateUser called with: userName=${userName}, firstName=${firstName}, lastName=${lastName}, password=${password}`);

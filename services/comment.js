@@ -46,7 +46,6 @@ export async function updateCommentsWithProfilePicture(userName, profilePicture)
     try {
         // Find all comments by the user before the update
         const commentsBeforeUpdate = await Comment.find({ name: userName });
-        console.log("Comments before update:", commentsBeforeUpdate);
 
         // Update the profile picture field
         const updateResult = await Comment.updateMany(
