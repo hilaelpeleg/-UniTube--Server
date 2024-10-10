@@ -269,24 +269,24 @@ export async function toggleDislike(videoId, userName) {
 
 export async function updateVideosProfilePicture(userName, profilePicture) {
     try {
-        // מצא את כל הסרטונים של המשתמש לפני העדכון
+        // Find all videos by the user before the update
         const videosBeforeUpdate = await Video.find({ uploader: userName });
         console.log("Videos before update:", videosBeforeUpdate);
 
-        // עדכן את שדה התמונת פרופיל
+        // Update the profile picture field
         const updateResult = await Video.updateMany(
-            { uploader: userName }, // מצא את כל הסרטונים של המשתמש
-            { $set: { profilePicture: profilePicture } } // עדכן את שדה התמונת פרופיל
+            { uploader: userName }, // Find all videos by the user
+            { $set: { profilePicture: profilePicture } } // Update the profile picture field
         );
 
-        // בדוק אם הייתה עדכון
+        // Check if any videos were updated
         if (updateResult.modifiedCount > 0) {
             console.log(`Updated profile picture for all videos uploaded by user: ${userName}`);
         } else {
             console.log(`No videos were updated for user: ${userName}`);
         }
 
-        // מצא את כל הסרטונים של המשתמש אחרי העדכון
+        // Find all videos by the user after the update
         const videosAfterUpdate = await Video.find({ uploader: userName });
         console.log("Videos after update:", videosAfterUpdate);
         
@@ -297,10 +297,10 @@ export async function updateVideosProfilePicture(userName, profilePicture) {
 
 export async function deleteVideosByUser(userName) {
     try {
-        // קח את כל הסרטונים של המשתמש
+        // Get all videos by the user
         const videos = await Video.find({ uploader: userName });
 
-        // מחק כל סרטון על ידי קריאה לפונקציה deleteVideo
+        // Delete each video by calling the deleteVideo function
         for (const video of videos) {
             const success = await deleteVideo(userName, video.id);
             if (!success) {
@@ -311,7 +311,7 @@ export async function deleteVideosByUser(userName) {
         console.log(`Deleted ${videos.length} videos for user: ${userName}`);
     } catch (error) {
         console.error('Failed to delete videos:', error);
-        throw error; // דחוף את השגיאה למעלה
+        throw error;
     }
 }
 

@@ -80,7 +80,7 @@ export async function updateUser(userName, firstName, lastName, password, profil
         existingUser.password = password !== undefined ? password : existingUser.password;
 
         // Handle profile picture upload (if a new file is provided)
-        if (profilePicture) {  // בדיקה אם יש קובץ תמונה והאם יש מאפיין path
+        if (profilePicture) {  // Check if there is an image file and if the path attribute exists
             console.log('Profile picture received:', profilePicture.path);
             existingUser.profilePicture = profilePicture;  // Directly use the provided profile picture path
             console.log('Updating profile picture');
