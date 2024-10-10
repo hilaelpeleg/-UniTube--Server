@@ -211,7 +211,7 @@ export const updateVideoLikes = async (req, res) => {
 
 export async function getVideoById(req, res) {
     try {
-        const video = await videoServices.getVideoById(req.params.videoId);
+        const video = await videoServices.getVideoById(req.params.pid);
         if (!video) {
             return res.status(404).json({ error: 'Video not found' });
         }
