@@ -4,7 +4,6 @@ import fs from 'fs';
 import Video from '../models/video.js';
 
 export async function getVideos(req, res) {
-    console.log("getvidecontroller");
     try {
         const popularVideos = await Video.find().sort({ views: -1 }).limit(10);
         const featuredVideos = await Video.find({ featured: true }).limit(10);
@@ -52,8 +51,8 @@ export async function incrementVideoViews(req, res) {
         res.status(500).json({ error: 'Failed to increment views' });
     }
 }
+
 export async function createVideo(req, res) {
-    console.log("createvideo controller");
     try {
         const { title, description, uploadDate, duration } = req.body;
         const userName = req.params.id; // Get the uploader's username from the URL
@@ -75,9 +74,6 @@ export async function createVideo(req, res) {
         // Ensure paths start with a '/'
         url = url.startsWith('/') ? url : '/' + url;
         thumbnailUrl = thumbnailUrl.startsWith('/') ? thumbnailUrl : '/' + thumbnailUrl;
-
-        console.log('Video URL:', url);
-        console.log('Thumbnail URL:', thumbnailUrl);
 
         // Now pass the userName and videoId to the service
         const video = await videoServices.createVideoInService(videoId, userName, title, description, url, thumbnailUrl,
@@ -109,11 +105,6 @@ export async function editVideo(req, res) {
         const { title, description } = req.body; // Video details
         const userName = req.params.id; // Username from URL parameters
         const videoId = Number(req.params.pid); // ID of the video from URL parameters
-        console.log('Request body:', req.body);
-        console.log("User Name:", userName);
-        console.log("Video ID:", videoId);
-        console.log("Title:", title);
-        console.log("Description:", description);
 
         // Fetch the existing video details
         const video = await videoServices.getVideoById(videoId);
@@ -132,8 +123,6 @@ export async function editVideo(req, res) {
         if (!updatedVideo) {
             return res.status(404).json({ error: 'Failed to update video' });
         }
-
-        console.log("Updated Video:", updatedVideo);
 
         // Check if new files were uploaded and remove old files
         if (req.files) {
@@ -175,7 +164,6 @@ export async function deleteVideo(req, res) {
 
         // Ensure that the logged-in user is the one who uploaded the video
         if (loggedInUser !== id) {
-            console.log(id);
             return res.status(403).json({ error: 'You are not authorized to delete this video' });
         }
 
@@ -195,7 +183,6 @@ export async function deleteVideo(req, res) {
 export const updateVideoLikes = async (req, res) => {
     const videoId = req.params.pid; // Get video ID from request parameters
     const newLikes = Number(req.body.likes); // Get new likes count from request body
-    console.log("mygod", newLikes, videoId);
 
     try {
         const updatedVideo = await videoServices.updateLikesById(videoId, newLikes); // Call the service to update likes
@@ -226,8 +213,6 @@ export async function toggleLike(req, res) {
         const { videoId } = req.params;
         const { userName } = req.body;
 
-        console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
-
         // Check if userName is provided
         if (!userName) {
             return res.status(400).json({ error: "userName is required" });
@@ -251,8 +236,6 @@ export const toggleDislike = async (req, res) => {
         const { videoId } = req.params;
         const { userName } = req.body;
 
-        console.log(`toggleDislike called with videoId: ${videoId} and userName: ${userName}`);
-
         // Check if userName is provided
         if (!userName) {
             return res.status(400).json({ error: "userName is required" });
@@ -273,7 +256,6 @@ export const toggleDislike = async (req, res) => {
 
 // Controller function to update video duration
 export async function updateVideoDuration(req, res) {
-    console.log("Updating video duration...");
     try {
         const videoId = req.params.pid; // Get the videoId from the URL
         const { duration } = req.body; // Get the duration from the request body

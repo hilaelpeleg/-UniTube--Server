@@ -69,19 +69,14 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        console.log('Update user called');
-
         // Extract the userName from the request parameters
         const userName = req.params.id;
-        console.log(`User name received: ${userName}`);
 
         // Extract other fields from request body
         const { firstName, lastName, password } = req.body;
-        console.log(`Received body: firstName=${firstName}, lastName=${lastName}, password=${password}`);
 
         // Get the profile picture file from req.file
         const profilePicture = req.file ? '/' + req.file.path.replace(/^public[\\/]/, '').replace(/\\/g, '/') : null;
-        console.log(`Profile picture path: ${profilePicture}`);
 
         // Fetch the user from the database
         const user = await userService.getUser(userName);
@@ -89,11 +84,9 @@ export async function updateUser(req, res) {
             console.log('User not found');
             return res.status(404).json({ error: 'User not found' });
         }
-        console.log('User found:', user);
 
         // Store path to the old profile picture file
         const oldPicFilePath = path.join('public', user.profilePicture);
-        console.log(`Old profile picture path: ${oldPicFilePath}`);
 
         // Update user information in the database
         const updatedUser = await userService.updateUser(user.userName, firstName, lastName, password, profilePicture);
@@ -101,7 +94,6 @@ export async function updateUser(req, res) {
             console.log('Failed to update user in the database');
             return res.status(404).json({ error: 'User not found' });
         }
-        console.log('User updated:', updatedUser);
 
         // Update the profile picture in all comments made by this user
         if (profilePicture) {
