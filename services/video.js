@@ -5,7 +5,6 @@ import fs from 'fs';
 import path from 'path';
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
-    console.log("video service");
     try {
         const newVideo = new Video({
             id: videoId,  // Ensure the ID is being set
@@ -152,6 +151,7 @@ export async function getVideoById(videoId) {
         return { code: 500, error: "Failed to fetch video" };
     }
 }
+
 export async function getUserVideos(userName) {
     try {
         // Find videos by uploader's name
@@ -225,34 +225,27 @@ export async function toggleLike(videoId, userName) {
 }
   
 export async function toggleDislike(videoId, userName) {
-    console.log("toggleDislike called with videoId:", videoId, "and userName:", userName);
-
     try {
         const numericVideoId = Number(videoId);
-        console.log("Converted videoId to number:", numericVideoId);
 
         const video = await Video.findOne({ id: numericVideoId });
         if (!video) {
             console.log("Video not found with ID:", numericVideoId);
             return { code: 404, error: "Video not found!" };
         }
-        console.log("Video found:", video.title);
 
         const userIndex = video.dislikesList.indexOf(userName);
         if (userIndex > -1) {
             // User has already disliked, so remove the dislike
-            console.log(`${userName} already disliked the video. Removing dislike.`);
             video.dislikesList.splice(userIndex, 1);
             video.disLikes--;
         } else {
             // User hasn't disliked, so add the dislike
-            console.log(`${userName} has not disliked the video. Adding dislike.`);
             video.dislikesList.push(userName);
             video.disLikes++;
             // Remove from likes if present
             const likeIndex = video.likesList.indexOf(userName);
             if (likeIndex > -1) {
-                console.log(`${userName} also liked the video. Removing like.`);
                 video.likesList.splice(likeIndex, 1);
                 video.likes--;
             }
@@ -269,26 +262,24 @@ export async function toggleDislike(videoId, userName) {
 
 export async function updateVideosProfilePicture(userName, profilePicture) {
     try {
-        // מצא את כל הסרטונים של המשתמש לפני העדכון
+        // Find all videos by the user before the update
         const videosBeforeUpdate = await Video.find({ uploader: userName });
-        console.log("Videos before update:", videosBeforeUpdate);
 
-        // עדכן את שדה התמונת פרופיל
+        // Update the profile picture field
         const updateResult = await Video.updateMany(
-            { uploader: userName }, // מצא את כל הסרטונים של המשתמש
-            { $set: { profilePicture: profilePicture } } // עדכן את שדה התמונת פרופיל
+            { uploader: userName }, // Find all videos by the user
+            { $set: { profilePicture: profilePicture } } // Update the profile picture field
         );
 
-        // בדוק אם הייתה עדכון
+        // Check if any videos were updated
         if (updateResult.modifiedCount > 0) {
             console.log(`Updated profile picture for all videos uploaded by user: ${userName}`);
         } else {
             console.log(`No videos were updated for user: ${userName}`);
         }
 
-        // מצא את כל הסרטונים של המשתמש אחרי העדכון
+        // Find all videos by the user after the update
         const videosAfterUpdate = await Video.find({ uploader: userName });
-        console.log("Videos after update:", videosAfterUpdate);
         
     } catch (error) {
         console.error('Failed to update videos profile picture:', error);
@@ -297,24 +288,21 @@ export async function updateVideosProfilePicture(userName, profilePicture) {
 
 export async function deleteVideosByUser(userName) {
     try {
-        // קח את כל הסרטונים של המשתמש
+        // Get all videos by the user
         const videos = await Video.find({ uploader: userName });
 
-        // מחק כל סרטון על ידי קריאה לפונקציה deleteVideo
+        // Delete each video by calling the deleteVideo function
         for (const video of videos) {
             const success = await deleteVideo(userName, video.id);
             if (!success) {
                 console.error(`Failed to delete video with ID: ${video.id}`);
             }
         }
-
-        console.log(`Deleted ${videos.length} videos for user: ${userName}`);
     } catch (error) {
         console.error('Failed to delete videos:', error);
-        throw error; // דחוף את השגיאה למעלה
+        throw error;
     }
 }
-
 
 // Service function to update video duration in the database
 export async function updateVideoDurationInService(videoId, duration) {

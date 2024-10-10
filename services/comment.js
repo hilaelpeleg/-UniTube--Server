@@ -44,24 +44,23 @@ export async function deleteComment(commentId) {
 export async function updateCommentsWithProfilePicture(userName, profilePicture) {
    
     try {
-        // מצא את כל התגובות של המשתמש לפני העדכון
+        // Find all comments by the user before the update
         const commentsBeforeUpdate = await Comment.find({ name: userName });
-        console.log("Comments before update:", commentsBeforeUpdate);
 
-        // עדכן את שדה התמונת פרופיל
+        // Update the profile picture field
         const updateResult = await Comment.updateMany(
             { name: userName }, 
             { $set: { profilePicture: profilePicture } }
         );
 
-        // בדוק אם הייתה עדכון
+        // Check if any comments were updated
         if (updateResult.modifiedCount > 0) {
             console.log(`Updated profile picture for all comments by user: ${userName}`);
         } else {
             console.log(`No comments were updated for user: ${userName}`);
         }
 
-        // מצא את כל התגובות של המשתמש אחרי העדכון
+        // Find all comments by the user after the update
         const commentsAfterUpdate = await Comment.find({ user: userName });
         console.log("Comments after update:", commentsAfterUpdate);
         
@@ -72,11 +71,11 @@ export async function updateCommentsWithProfilePicture(userName, profilePicture)
 
 export async function deleteCommentsByUser(userName) {
     try {
-        const result = await Comment.deleteMany({ name: userName }); // מחק את כל התגובות של המשתמש
+        const result = await Comment.deleteMany({ name: userName }); // Delete all comments by the user
         console.log(`Deleted ${result.deletedCount} comments for user: ${userName}`);
     } catch (error) {
         console.error('Failed to delete comments:', error);
-        throw error; // דחוף את השגיאה למעלה
+        throw error; // Propagate the error
     }
 }
 
