@@ -47,19 +47,19 @@ export async function createUser(req, res) {
 export async function deleteUser(req, res) {
     try {
         const userName = req.params.id;
-        const user = await userService.getUser(userName); // בדוק אם המשתמש קיים קודם
+        const user = await userService.getUser(userName); // Check if the user exists first
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // מחק את התגובות של המשתמש
-        await commentService.deleteCommentsByUser(userName); // פונקציה שתמחק את התגובות של המשתמש
+        // Delete the user's comments
+        await commentService.deleteCommentsByUser(userName);
 
-        // מחק את הסרטונים של המשתמש
-        await videoService.deleteVideosByUser(userName); // פונקציה שתמחק את הסרטונים של המשתמש
+        // Delete the user's videos
+        await videoService.deleteVideosByUser(userName);
 
-        // מחק את המשתמש
-        await userService.deleteUser(userName); // המשך למחוק אם נמצא
+        // Delete the user
+        await userService.deleteUser(userName);
         res.status(200).json({ message: 'User and related data deleted successfully' });
     } catch (error) {
         console.error('Error deleting user:', error);
