@@ -71,13 +71,10 @@ export async function createVideo(req, res) {
         let url = req.files.url[0].path; // Get the video file path from Multer
         let thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
 
-        // Define the folder path for thumbnailUrl
-        const thumbnailFolderPath = path.join(__dirname, '../public/thumbnailUrl');
-
-        // Ensure the thumbnailUrl directory exists
-        const thumbnailDir = path.join(__dirname, 'public/thumbnailUrl');
+        // Check if the "public/thumbnailUrl" directory exists, and create it if necessary
+        const thumbnailDir = path.join(__dirname, '../public/thumbnailUrl'); // Path to the thumbnail directory
         if (!fs.existsSync(thumbnailDir)) {
-            fs.mkdirSync(thumbnailDir, { recursive: true });  // Create the directory if it doesn't exist
+            fs.mkdirSync(thumbnailDir, { recursive: true }); // Create the directory recursively
         }
 
         // Remove the "public/" from the paths
