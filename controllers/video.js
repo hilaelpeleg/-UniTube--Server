@@ -1,6 +1,7 @@
 import videoServices from '../services/video.js';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import Video from '../models/video.js';
 
 export async function getVideos(req, res) {
@@ -59,6 +60,9 @@ export async function createVideo(req, res) {
         const videoId = req.body.id; // Get the video ID from the request body
         const profilePicture = req.body.profilePicture;
 
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+
         // Check that files exist
         if (!req.files || !req.files.url || !req.files.thumbnailUrl) {
             return res.status(400).json({ error: 'Video and thumbnail files are required' });
@@ -66,6 +70,15 @@ export async function createVideo(req, res) {
 
         let url = req.files.url[0].path; // Get the video file path from Multer
         let thumbnailUrl = req.files.thumbnailUrl[0].path; // Get the thumbnail file path from Multer
+
+        // Define the folder path for thumbnailUrl
+        const thumbnailFolderPath = path.join(__dirname, '../public/thumbnailUrl');
+
+        // Ensure the thumbnailUrl directory exists
+        const thumbnailDir = path.join(__dirname, 'public/thumbnailUrl');
+        if (!fs.existsSync(thumbnailDir)) {
+            fs.mkdirSync(thumbnailDir, { recursive: true });  // Create the directory if it doesn't exist
+        }
 
         // Remove the "public/" from the paths
         url = url.replace(/^public[\\/]/, '');  // Use regex to remove 'public/' at the start of the path
