@@ -41,8 +41,9 @@ export async function deleteUser(userName) {
         // Delete the user from the database
         await User.findOneAndDelete({ userName: userName });
 
-        // If there is a profile picture, delete it from the server
-        if (user.profilePicture) {
+        // If there is a profile picture and it's not the default, delete it from the server
+        const defaultProfilePicture = '/profiles/default_profile_picture.png'; // Replace with your actual default profile picture filename
+        if (user.profilePicture && user.profilePicture !== defaultProfilePicture) {
             const profilePicturePath = path.join('public', user.profilePicture); // Build the path for the profile picture
             if (fs.existsSync(profilePicturePath)) {
                 fs.unlinkSync(profilePicturePath); // Delete the file
