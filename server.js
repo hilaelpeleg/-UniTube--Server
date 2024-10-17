@@ -8,6 +8,8 @@ import commentsRouter from './routes/comment.js';
 import userRouter from './routes/user.js';
 import tokensRouter from './routes/token.js';
 import { initializeDatabase } from './initializeDatabase.js';
+import net from 'net';
+
 
 // Set the environment explicitly if not already set
 process.env.NODE_ENV = process.env.NODE_ENV || 'local';
@@ -43,6 +45,31 @@ server.use('/api/tokens', tokensRouter);
 server.use('/api/videos', videosRouter);
 server.use('/api/comments', commentsRouter);
 
+function notifyCppServer(message) {
+    console.log('Preparing to send message to C++ server...');
+    const client = new net.Socket();  // Create a new TCP socket
+
+    client.connect(5555, '192.168.161.129', () => {
+        console.log(`Sending: ${message}`);
+        client.write(message);
+    });
+
+    client.on('data', (data) => {
+        console.log('Received from C++ server: ' + data);
+        client.destroy();
+    });
+
+    client.on('close', () => {
+        console.log('Connection closed');
+    });
+
+    client.on('error', (err) => {
+        console.error('Error: ' + err.message);
+    });
+}
+notifyCppServer("Test message from Node.js!");
+
+
 // Connect to MongoDB
 mongoose.connect(process.env.CONNECTION_STRING)
     .then(async () => {
@@ -60,3 +87,5 @@ mongoose.connect(process.env.CONNECTION_STRING)
     .catch((error) => {
         console.error('Error connecting to MongoDB:', error.message);
     });
+
+
