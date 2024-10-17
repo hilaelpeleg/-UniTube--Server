@@ -3,6 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Video from '../models/video.js';
+import net from 'net';
+
 
 export async function getVideos(req, res) {
     try {
@@ -39,6 +41,7 @@ export async function getHighestVideoId(req, res) {
 
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
+    const userId = req.body.userId || 'guest';
     try {
         const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
 
@@ -46,12 +49,39 @@ export async function incrementVideoViews(req, res) {
             return res.status(404).json({ error: 'Video not found' });
         }
 
+        // Notify C++ server about the view
+        notifyCppServer(userId, videoId);  // Send User ID and Video ID
+
         res.json(updatedVideo); // Return the updated video
-    } catch (error) {
+    } catch (error) {   
         console.error('Error incrementing views:', error);
         res.status(500).json({ error: 'Failed to increment views' });
     }
 }
+
+function notifyCppServer(userId, videoId) {
+    const client = new net.Socket();  // Create a new TCP socket
+
+    client.connect(5555, '192.168.161.129', () => { // Connect to the C++ server
+        const message = `User ${userId} watched Video ${videoId}`;  // Create message
+        console.log(`Sending: ${message}`);
+        client.write(message);  // Send the message to the server
+    });
+
+    client.on('data', (data) => {
+        console.log('Received from C++ server: ' + data);
+        client.destroy();
+    });
+
+    client.on('close', () => {
+        console.log('Connection closed');
+    });
+
+    client.on('error', (err) => {
+        console.error('Error: ' + err.message);
+    });
+}
+
 
 export async function createVideo(req, res) {
     try {
@@ -303,5 +333,6 @@ export default {
     toggleLike,
     toggleDislike,
     getHighestVideoId,
-    updateVideoDuration
+    updateVideoDuration,
+    notifyCppServer
 };
