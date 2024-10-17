@@ -41,7 +41,8 @@ export async function getHighestVideoId(req, res) {
 
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
-    const userId = req.body.userId || 'guest';
+    const userName = req.body.userName || 'guest';
+    console.log(userName);
     try {
         const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
 
@@ -50,7 +51,7 @@ export async function incrementVideoViews(req, res) {
         }
 
         // Notify C++ server about the view
-        notifyCppServer(userId, videoId);  // Send User ID and Video ID
+        notifyCppServer(userName, videoId);  // Send User ID and Video ID
 
         res.json(updatedVideo); // Return the updated video
     } catch (error) {   
