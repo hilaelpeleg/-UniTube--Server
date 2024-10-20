@@ -42,7 +42,13 @@ export async function getHighestVideoId(req, res) {
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
     const userName = req.body.userName || 'guest';
-    console.log(userName);
+
+    // לא לשלוח הודעה לשרת C++ אם המשתמש הוא אורח
+    if (userName === 'guest') {
+        console.log("Guest user; not sending data to C++.");
+        return res.json({ message: "Guest users do not generate views." });
+    }
+
     try {
         const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
 

@@ -45,29 +45,29 @@ server.use('/api/tokens', tokensRouter);
 server.use('/api/videos', videosRouter);
 server.use('/api/comments', commentsRouter);
 
-function notifyCppServer(message) {
-    console.log('Preparing to send message to C++ server...');
-    const client = new net.Socket();  // Create a new TCP socket
+// function notifyCppServer(message) {
+//     console.log('Preparing to send message to C++ server...');
+//     const client = new net.Socket();  // Create a new TCP socket
 
-    client.connect(5555, '192.168.161.129', () => {
-        console.log(`Sending: ${message}`);
-        client.write(message);
-    });
+//     client.connect(5555, '192.168.161.129', () => {
+//         console.log(`Sending: ${message}`);
+//         client.write(message);
+//     });
 
-    client.on('data', (data) => {
-        console.log('Received from C++ server: ' + data);
-        client.destroy();
-    });
+//     client.on('data', (data) => {
+//         console.log('Received from C++ server: ' + data);
+//         client.destroy();
+//     });
 
-    client.on('close', () => {
-        console.log('Connection closed');
-    });
+//     client.on('close', () => {
+//         console.log('Connection closed');
+//     });
 
-    client.on('error', (err) => {
-        console.error('Error: ' + err.message);
-    });
-}
-notifyCppServer("Test message from Node.js!");
+//     client.on('error', (err) => {
+//         console.error('Error: ' + err.message);
+//     });
+// }
+// notifyCppServer("Test message from Node.js!");
 
 
 // Connect to MongoDB
