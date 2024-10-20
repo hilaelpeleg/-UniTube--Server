@@ -66,11 +66,11 @@ export async function incrementVideoViews(req, res) {
     }
 }
 
-function notifyCppServer(userId, videoId) {
+function notifyCppServer(userName, videoId) {
     const client = new net.Socket();  // Create a new TCP socket
 
     client.connect(5555, '192.168.161.129', () => { // Connect to the C++ server
-        const message = `User ${userId} watched Video ${videoId}`;  // Create message
+        const message = `User ${userName} watched Video ${videoId}`;  // Create message
         console.log(`Sending: ${message}`);
         client.write(message);  // Send the message to the server
     });
