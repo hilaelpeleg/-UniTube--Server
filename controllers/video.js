@@ -28,6 +28,24 @@ export async function getVideos(req, res) {
     }
 }
 
+
+// Controller function to get recommended videos
+const getRecommendedVideos = async (req, res) => {
+    const { username, videoId } = req.query; // Extracting username and videoId from query parameters
+
+    if (!username || !videoId) {
+        return res.status(400).json({ error: 'Username and videoId are required.' });
+    }
+
+    try {
+        const recommendations = await videoService.getRecommendedVideos(username, videoId); // Fetch recommended videos from service
+        res.status(200).json(recommendations); // Respond with recommendations
+    } catch (error) {
+        console.error('Error retrieving recommended videos:', error);
+        res.status(500).json({ error: 'Failed to retrieve recommended videos' });
+    }
+};
+
 export async function getHighestVideoId(req, res) {
     try {
         const highestVideo = await Video.findOne({}, {}, { sort: { id: -1 } }); // Find the latest video by ID
