@@ -3,7 +3,7 @@ import User from '../models/user.js';
 import Comment from '../models/comment.js';
 import fs from 'fs';
 import path from 'path';
-
+import net from 'net';
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
     try {
@@ -183,6 +183,43 @@ export async function getAllVideos() {
     }
 }
 
+const getRecommendedVideos = async (username, videoId) => {
+    return new Promise((resolve, reject) => {
+        const client = net.createConnection({ port: 5555, host: '192.168.161.129' }, () => {
+            console.log('Connected to C++ server');
+
+            // Prepare the message to send
+            const message = `GET /recommendations?username=${username}&videoId=${videoId} HTTP/1.1\r\nHost: 192.168.161.129\r\nConnection: close\r\n\r\n`;
+            client.write(message); // Send the request
+        });
+
+        // Handle data received from server
+        client.on('data', (data) => {
+            console.log('Received from server:', data.toString());
+            const responseData = parseResponse(data); // Define your own parseResponse function
+            resolve(responseData);
+            client.end();
+        });
+
+        client.on('error', (err) => {
+            console.error('Error connecting to C++ server:', err);
+            reject(err);
+        });
+
+        client.on('end', () => {
+            console.log('Disconnected from C++ server');
+        });
+    });
+};
+
+// A simple function to parse the HTTP response (you'll need to implement it)
+const parseResponse = (data) => {
+    const responseString = data.toString();
+    // Assuming the response is in JSON format
+    const jsonResponse = responseString.split('\r\n\r\n')[1]; // Extract the body
+    return JSON.parse(jsonResponse); // Parse the JSON and return
+};
+
 // Service function to update video likes
 export const updateLikesById = async (videoId, newLikes) => {
     try {
@@ -338,5 +375,6 @@ export default {
     toggleDislike,
     updateVideosProfilePicture,
     deleteVideosByUser,
-    updateVideoDurationInService
+    updateVideoDurationInService,
+    getRecommendedVideos
 };

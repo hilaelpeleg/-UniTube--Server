@@ -25,6 +25,6 @@ router.post('/:videoId/like', videoController.toggleLike);
 router.post('/:videoId/dislike', videoController.toggleDislike);
 
 // Route to get recommended videos with username and video ID 
-router.get('/:pid/recommendations/id', videoController.getRecommendedVideos);
+router.get('/:pid/recommendations/:id', videoController.getRecommendedVideos);
 
 export default router;

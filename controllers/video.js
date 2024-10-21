@@ -29,19 +29,27 @@ export async function getVideos(req, res) {
 }
 
 
-// Controller function to get recommended videos
 const getRecommendedVideos = async (req, res) => {
-    const { username, videoId } = req.query; // Extracting username and videoId from query parameters
+    const username = req.params.id; // Extracting username from route parameters
+    const videoId = req.params.pid; // Extracting videoId from route parameters
+
+    // Log the received parameters
+    console.log('Received request for recommendations:');
+    console.log('Username:', username);
+    console.log('Video ID:', videoId);
 
     if (!username || !videoId) {
+        console.error('Missing username or videoId'); // Log if parameters are missing
         return res.status(400).json({ error: 'Username and videoId are required.' });
     }
 
     try {
-        const recommendations = await videoService.getRecommendedVideos(username, videoId); // Fetch recommended videos from service
+        const recommendations = await videoServices.getRecommendedVideos(username, videoId); // Fetch recommended videos from service
+        console.log('Recommended videos retrieved successfully:', recommendations); // Log the recommendations
+
         res.status(200).json(recommendations); // Respond with recommendations
     } catch (error) {
-        console.error('Error retrieving recommended videos:', error);
+        console.error('Error retrieving recommended videos:', error); // Log the error
         res.status(500).json({ error: 'Failed to retrieve recommended videos' });
     }
 };
@@ -359,5 +367,6 @@ export default {
     toggleDislike,
     getHighestVideoId,
     updateVideoDuration,
-    notifyCppServer
+    notifyCppServer,
+    getRecommendedVideos
 };
