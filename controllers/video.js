@@ -29,30 +29,33 @@ export async function getVideos(req, res) {
 }
 
 
+// פונקציה בקונטרולר לקבלת סרטונים מומלצים
 const getRecommendedVideos = async (req, res) => {
-    const username = req.params.id; // Extracting username from route parameters
-    const videoId = req.params.pid; // Extracting videoId from route parameters
+    const username = req.params.id;
+    const videoId = Number(req.params.pid); // המרת ה-videoId למספר
 
-    // Log the received parameters
     console.log('Received request for recommendations:');
     console.log('Username:', username);
     console.log('Video ID:', videoId);
 
-    if (!username || !videoId) {
-        console.error('Missing username or videoId'); // Log if parameters are missing
-        return res.status(400).json({ error: 'Username and videoId are required.' });
+    if (!username || isNaN(videoId)) {
+        console.error('Missing username or invalid videoId');
+        return res.status(400).json({ error: 'Username and valid videoId are required.' });
     }
 
     try {
-        const recommendations = await videoServices.getRecommendedVideos(username, videoId); // Fetch recommended videos from service
-        console.log('Recommended videos retrieved successfully:', recommendations); // Log the recommendations
+        const recommendedVideoIds = await videoServices.getRecommendedVideos(username, videoId);
+        console.log('Recommended Video IDs:', recommendedVideoIds);
 
-        res.status(200).json(recommendations); // Respond with recommendations
+        const videoDetails = await videoServices.getVideoDetails(recommendedVideoIds);
+        console.log('Recommended video details retrieved successfully:', videoDetails);
+        res.status(200).json(videoDetails);
     } catch (error) {
-        console.error('Error retrieving recommended videos:', error); // Log the error
+        console.error('Error retrieving recommended videos:', error);
         res.status(500).json({ error: 'Failed to retrieve recommended videos' });
     }
 };
+
 
 export async function getHighestVideoId(req, res) {
     try {

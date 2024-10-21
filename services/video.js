@@ -183,21 +183,29 @@ export async function getAllVideos() {
     }
 }
 
-const getRecommendedVideos = async (username, videoId) => {
+// פונקציה לחיבור לשרת C++ וקבלת המלצות
+// פונקציה לקבלת הסרטונים המומלצים
+export const getRecommendedVideos = async (username, videoId) => {
     return new Promise((resolve, reject) => {
         const client = net.createConnection({ port: 5555, host: '192.168.161.129' }, () => {
             console.log('Connected to C++ server');
-
-            // Prepare the message to send
-            const message = `GET /recommendations?username=${username}&videoId=${videoId} HTTP/1.1\r\nHost: 192.168.161.129\r\nConnection: close\r\n\r\n`;
-            client.write(message); // Send the request
+            const message = `recommend:${username}:${videoId}`;
+            client.write(message); // שליחת הבקשה
+            console.log('Sending request to C++ server:', message);
         });
 
-        // Handle data received from server
-        client.on('data', (data) => {
+        client.on('data', async (data) => {
             console.log('Received from server:', data.toString());
-            const responseData = parseResponse(data); // Define your own parseResponse function
-            resolve(responseData);
+            let recommendedVideoIds = parseResponse(data); // פרס את התגובה
+            
+            // אם הרשימה ריקה או פחות מ-6 סרטונים, נשלוף סרטונים אקראיים מהמונגו
+            if (!recommendedVideoIds || recommendedVideoIds.length < 6) {
+                console.log('Not enough recommended videos, fetching random videos from MongoDB');
+                const randomVideos = await getRandomVideos(10 - recommendedVideoIds.length); // השלמת רשימה ל-10 סרטונים
+                recommendedVideoIds = [...recommendedVideoIds, ...randomVideos.map(video => video.id)];
+            }
+
+            resolve(recommendedVideoIds); // החזרת רשימת הסרטונים
             client.end();
         });
 
@@ -212,12 +220,25 @@ const getRecommendedVideos = async (username, videoId) => {
     });
 };
 
-// A simple function to parse the HTTP response (you'll need to implement it)
+// פונקציה לקבלת פרטי סרטונים לפי IDs
+export const getVideoDetails = async (videoIds) => {
+    try {
+        console.log('Fetching video details for IDs:', videoIds);
+        const videos = await Video.find({ id: { $in: videoIds } }); // חיפוש סרטונים לפי ID
+        console.log('Fetched videos:', videos);
+        return videos; // החזרת הסרטונים שנמצאו
+    } catch (error) {
+        console.error('Error fetching video details:', error);
+        throw new Error('Failed to fetch video details');
+    }
+};
+
+// פונקציה לפרס את התגובה מהשרת
 const parseResponse = (data) => {
     const responseString = data.toString();
-    // Assuming the response is in JSON format
-    const jsonResponse = responseString.split('\r\n\r\n')[1]; // Extract the body
-    return JSON.parse(jsonResponse); // Parse the JSON and return
+    const jsonResponse = responseString.split('\r\n\r\n')[1]; // חילוץ גוף התגובה
+    console.log('Parsed JSON Response:', jsonResponse);
+    return JSON.parse(jsonResponse); // פרס את ה-JSON והחזר
 };
 
 // Service function to update video likes
@@ -376,5 +397,6 @@ export default {
     updateVideosProfilePicture,
     deleteVideosByUser,
     updateVideoDurationInService,
-    getRecommendedVideos
+    getRecommendedVideos,
+    getVideoDetails
 };
