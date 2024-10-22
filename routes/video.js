@@ -6,6 +6,8 @@ const router = express.Router();
 // Route to get all videos
 router.get('/', videoController.getVideos);
 
+router.get('/getAllVideos/videos', videoController.getAllVideos);
+
 // Route to get the video with the highest ID
 router.get('/highest-id', videoController.getHighestVideoId);
 
@@ -26,5 +28,7 @@ router.post('/:videoId/dislike', videoController.toggleDislike);
 
 // Route to get recommended videos with username and video ID 
 router.get('/:pid/recommendations/:id', videoController.getRecommendedVideos);
+
+
 
 export default router;

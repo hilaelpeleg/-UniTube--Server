@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/:id', userController.getUser);
 
+
 // Configure multer for file storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -33,6 +34,7 @@ router.delete('/:id', validateToken, userController.deleteUser);
 
 
 router.get('/:id/videos/:pid', videoController.getVideoById);
+
 router.put('/:id/videos/:pid', validateToken, 
     upload.fields([{ name: 'url', maxCount: 1 }, { name: 'thumbnailUrl', maxCount: 1 }]), // Use multer here
     videoController.editVideo
