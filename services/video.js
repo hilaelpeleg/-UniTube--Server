@@ -199,18 +199,21 @@ export const getRecommendedVideos = async (username, videoId) => {
 
             let recommendedVideoIds;
             try {
-                recommendedVideoIds = JSON.parse(responseString); // פרס את התגובה מהשרת C++
+                recommendedVideoIds = JSON.parse(responseString); // פריסה של המחרוזת מהשרת C++
             } catch (error) {
                 console.error('Error parsing server response:', error);
                 return reject(new Error('Failed to parse server response'));
             }
 
-                // הדפסת המזהים כדי לראות את הערכים וסוגם
-    recommendedVideoIds.forEach(id => {
-        console.log(`ID received from C++ server: ${id}, type: ${typeof id}`);
-    });
+            // המרת המזהים למספרים (Number)
+            recommendedVideoIds = recommendedVideoIds.map(id => Number(id)); // כאן אנחנו מבטיחים שכל מזהה הוא מספר
+            
+            // הדפסת המזהים עם הסוג כדי לוודא שהם מספרים
+            recommendedVideoIds.forEach(id => {
+                console.log(`ID received from C++ server: ${id}, type: ${typeof id}`);
+            });
 
-            // אם הרשימה ריקה או פחות מ-6 סרטונים, נשלוף סרטונים אקראיים מהמונגו
+            // אם אין מספיק סרטונים, מושכים אקראיים ממונגו
             if (!recommendedVideoIds || recommendedVideoIds.length < 6) {
                 console.log('Not enough recommended videos, fetching random videos from MongoDB');
                 const randomVideos = await getRandomVideos(10 - recommendedVideoIds.length); // השלמת רשימה ל-10 סרטונים
@@ -218,7 +221,7 @@ export const getRecommendedVideos = async (username, videoId) => {
             }
 
             // קבלת פרטי הסרטונים על בסיס ה-IDs
-            console.log("please work", recommendedVideoIds)
+            console.log("please work", recommendedVideoIds);
             const videoDetails = await getVideoDetails(recommendedVideoIds); 
             resolve(videoDetails); // החזרת פרטי הסרטונים ללקוח
             client.end();
@@ -247,12 +250,12 @@ export const getRandomVideos = async (limit) => {
         throw new Error('Failed to fetch random videos');
     }
 };
-
 // פונקציה לקבלת פרטי סרטונים לפי IDs
 export const getVideoDetails = async (videoIds) => {
     try {
         console.log('Fetching video details for IDs:', videoIds);
-        const videos = await Video.find({ id: { $in: videoIds } }); // חיפוש סרטונים לפי ID
+        // ווידוא שה-`videoIds` הם מספרים בשאילתה
+        const videos = await Video.find({ id: { $in: videoIds.map(id => Number(id)) } }); // המרת מזהי הסרטונים למספרים בשאילתה
         console.log('Fetched videos:', videos);
         return videos; // החזרת הסרטונים שנמצאו
     } catch (error) {
@@ -260,7 +263,6 @@ export const getVideoDetails = async (videoIds) => {
         throw new Error('Failed to fetch video details');
     }
 };
-
 // Service function to update video likes
 export const updateLikesById = async (videoId, newLikes) => {
     try {

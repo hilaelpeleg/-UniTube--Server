@@ -47,9 +47,9 @@ const getRecommendedVideos = async (req, res) => {
         const recommendedVideoIds = await videoServices.getRecommendedVideos(username, videoId);
         console.log('Recommended Video IDs:', recommendedVideoIds);
 
-        const videoDetails = await videoServices.getVideoDetails(recommendedVideoIds);
-        console.log('Recommended video details retrieved successfully:', videoDetails);
-        res.status(200).json(videoDetails);
+        // const videoDetails = await videoServices.getVideoDetails(recommendedVideoIds);
+        // console.log('Recommended video details retrieved successfully:', videoDetails);
+        res.status(200).json(recommendedVideoIds);
     } catch (error) {
         console.error('Error retrieving recommended videos:', error);
         res.status(500).json({ error: 'Failed to retrieve recommended videos' });
@@ -99,7 +99,7 @@ function notifyCppServer(userName, videoId) {
     const client = new net.Socket();  // Create a new TCP socket
 
     client.connect(5555, '192.168.161.129', () => { // Connect to the C++ server
-        const message = `User ${userName} watched Video ${videoId}`;  // Create message
+        const message = `User:${userName} ,watchedVideo:${videoId}`;  // Create message
         console.log(`Sending: ${message}`);
         client.write(message);  // Send the message to the server
     });
