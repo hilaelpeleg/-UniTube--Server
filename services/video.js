@@ -6,8 +6,12 @@ import path from 'path';
 import net from 'net';
 import customENV from 'custom-env';
 
-// טוען את משתני הסביבה מקובץ env.local
-customENV.env('local');
+// Set the environment explicitly if not already set
+process.env.NODE_ENV = process.env.NODE_ENV || 'local';
+
+// Load environment variables
+customENV.env(process.env.NODE_ENV, "./config");
+
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
     try {
@@ -187,50 +191,52 @@ export async function getAllVideos() {
     }
 }
 
-// פונקציה לקבלת הסרטונים המומלצים
+// Function to get recommended videos
 export const getRecommendedVideos = async (username, videoId) => {
     return new Promise((resolve, reject) => {
-        const socketPort = process.env.SOCKET_PORT || 5555; // משתמש ב-SOCKET_PORT מהסביבה או 5555 כברירת מחדל
-        const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // משתמש ב-VIRTUAL_MACHINE_IP או ב-IP לוקלי כברירת מחדל
+        const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from environment or default to 5555
+        const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
 
+        // Create a connection to the C++ server
         const client = net.createConnection({ port: socketPort, host: virtualMachineIp }, () => {
             console.log('Connected to C++ server');
             const message = `recommend:${username}:${videoId}`;
-            client.write(message); // שליחת הבקשה לשרת C++
+            client.write(message);  // Send the request to the C++ server
             console.log('Sending request to C++ server:', message);
         });
 
+        // Handle data received from the server
         client.on('data', async (data) => {
             console.log('Received from server:', data.toString());
             const responseString = data.toString().trim();
 
             let recommendedVideoIds;
             try {
-                recommendedVideoIds = JSON.parse(responseString); // פריסה של המחרוזת מהשרת C++
+                recommendedVideoIds = JSON.parse(responseString); // Parse the string from the C++ server
             } catch (error) {
                 console.error('Error parsing server response:', error);
                 return reject(new Error('Failed to parse server response'));
             }
 
-            // המרת המזהים למספרים (Number)
-            recommendedVideoIds = recommendedVideoIds.map(id => Number(id)); // כאן אנחנו מבטיחים שכל מזהה הוא מספר
+            // Convert the IDs to numbers
+            recommendedVideoIds = recommendedVideoIds.map(id => Number(id)); 
             
-            // הדפסת המזהים עם הסוג כדי לוודא שהם מספרים
+            // Print the IDs and their types to verify they are numbers
             recommendedVideoIds.forEach(id => {
                 console.log(`ID received from C++ server: ${id}, type: ${typeof id}`);
             });
 
-            // אם אין מספיק סרטונים, מושכים אקראיים ממונגו
+            // If there are not enough recommended videos, fetch random ones from MongoDB
             if (!recommendedVideoIds || recommendedVideoIds.length < 6) {
                 console.log('Not enough recommended videos, fetching random videos from MongoDB');
                 const randomVideos = await getRandomVideos(10 - recommendedVideoIds.length); // השלמת רשימה ל-10 סרטונים
                 recommendedVideoIds = [...recommendedVideoIds, ...randomVideos.map(video => video.id)];
             }
 
-            // קבלת פרטי הסרטונים על בסיס ה-IDs
+            // Get the video details based on the IDs
             console.log("please work", recommendedVideoIds);
             const videoDetails = await getVideoDetails(recommendedVideoIds); 
-            resolve(videoDetails); // החזרת פרטי הסרטונים ללקוח
+            resolve(videoDetails);  // Return the video details to the client
             client.end();
         });
 
@@ -245,31 +251,33 @@ export const getRecommendedVideos = async (username, videoId) => {
     });
 };
 
-// פונקציה לשלוף סרטונים אקראיים ממאגר המונגו
+// Function to fetch random videos from the MongoDB database
 export const getRandomVideos = async (limit) => {
     try {
         console.log(`Fetching ${limit} random videos from MongoDB`);
-        const randomVideos = await Video.aggregate([{ $sample: { size: limit } }]); // שליפת סרטונים אקראיים
+        const randomVideos = await Video.aggregate([{ $sample: { size: limit } }]); // Fetch random videos using MongoDB's $sample aggregation
         console.log('Fetched random videos:', randomVideos);
-        return randomVideos; // החזרת הסרטונים שנמצאו
+        return randomVideos;  // Return the fetched random videos
     } catch (error) {
         console.error('Error fetching random videos:', error);
         throw new Error('Failed to fetch random videos');
     }
 };
-// פונקציה לקבלת פרטי סרטונים לפי IDs
+
+// Function to fetch video details based on video IDs
 export const getVideoDetails = async (videoIds) => {
     try {
         console.log('Fetching video details for IDs:', videoIds);
-        // ווידוא שה-`videoIds` הם מספרים בשאילתה
-        const videos = await Video.find({ id: { $in: videoIds.map(id => Number(id)) } }); // המרת מזהי הסרטונים למספרים בשאילתה
+        // Ensure that the `videoIds` are converted to numbers in the query
+        const videos = await Video.find({ id: { $in: videoIds.map(id => Number(id)) } });  // Convert video IDs to numbers in the query
         console.log('Fetched videos:', videos);
-        return videos; // החזרת הסרטונים שנמצאו
+        return videos; // Return the fetched video details
     } catch (error) {
         console.error('Error fetching video details:', error);
         throw new Error('Failed to fetch video details');
     }
 };
+
 // Service function to update video likes
 export const updateLikesById = async (videoId, newLikes) => {
     try {

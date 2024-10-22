@@ -6,8 +6,11 @@ import Video from '../models/video.js';
 import net from 'net';
 import customENV from 'custom-env';
 
-// טוען את משתני הסביבה מקובץ env.local
-customENV.env('local');
+// Set the environment explicitly if not already set
+process.env.NODE_ENV = process.env.NODE_ENV || 'local';
+
+// Load environment variables
+customENV.env(process.env.NODE_ENV, "./config");
 
 export async function getVideos(req, res) {
     try {
@@ -32,15 +35,16 @@ export async function getVideos(req, res) {
 }
 
 
-// פונקציה בקונטרולר לקבלת סרטונים מומלצים
+// Controller function for retrieving recommended videos
 const getRecommendedVideos = async (req, res) => {
     const username = req.params.id;
-    const videoId = Number(req.params.pid); // המרת ה-videoId למספר
+    const videoId = Number(req.params.pid); // Convert videoId from the request parameters to a number
 
     console.log('Received request for recommendations:');
     console.log('Username:', username);
     console.log('Video ID:', videoId);
 
+    // Check if username or videoId is missing or invalid
     if (!username || isNaN(videoId)) {
         console.error('Missing username or invalid videoId');
         return res.status(400).json({ error: 'Username and valid videoId are required.' });
@@ -75,7 +79,7 @@ export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
     const userName = req.body.userName || 'guest';
 
-    // לא לשלוח הודעה לשרת C++ אם המשתמש הוא אורח
+    // Do not send a message to the C++ server if the user is a guest
     if (userName === 'guest') {
         console.log("Guest user; not sending data to C++.");
         return res.json({ message: "Guest users do not generate views." });
@@ -99,15 +103,15 @@ export async function incrementVideoViews(req, res) {
 }
 
 function notifyCppServer(userName, videoId) {
-    const socketPort = process.env.SOCKET_PORT || 5555; // משתמש ב-SOCKET_PORT מהקובץ env או ב-5555 כברירת מחדל
-    const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // משתמש ב-VIRTUAL_MACHINE_IP או ב-IP לוקלי כברירת מחדל
+    const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from the env file or default to 5555
+    const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
 
-    const client = new net.Socket();  // יצירת סוקט TCP חדש
+    const client = new net.Socket(); // Create a new TCP socket
 
-    client.connect(socketPort, virtualMachineIp, () => { // התחברות לשרת C++ עם פורט ו-IP מהסביבה
-        const message = `User:${userName} ,watchedVideo:${videoId}`;  // יצירת ההודעה
+    client.connect(socketPort, virtualMachineIp, () => { // Connect to the C++ server using port and IP from the environment
+        const message = `User:${userName} ,watchedVideo:${videoId}`;  
         console.log(`Sending: ${message} to ${virtualMachineIp}:${socketPort}`);
-        client.write(message);  // שליחת ההודעה לשרת
+        client.write(message); 
     });
 
     client.on('data', (data) => {
