@@ -4,7 +4,10 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Video from '../models/video.js';
 import net from 'net';
+import customENV from 'custom-env';
 
+// טוען את משתני הסביבה מקובץ env.local
+customENV.env('local');
 
 export async function getVideos(req, res) {
     try {
@@ -96,12 +99,15 @@ export async function incrementVideoViews(req, res) {
 }
 
 function notifyCppServer(userName, videoId) {
-    const client = new net.Socket();  // Create a new TCP socket
+    const socketPort = process.env.SOCKET_PORT || 5555; // משתמש ב-SOCKET_PORT מהקובץ env או ב-5555 כברירת מחדל
+    const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // משתמש ב-VIRTUAL_MACHINE_IP או ב-IP לוקלי כברירת מחדל
 
-    client.connect(5555, '192.168.161.129', () => { // Connect to the C++ server
-        const message = `User:${userName} ,watchedVideo:${videoId}`;  // Create message
-        console.log(`Sending: ${message}`);
-        client.write(message);  // Send the message to the server
+    const client = new net.Socket();  // יצירת סוקט TCP חדש
+
+    client.connect(socketPort, virtualMachineIp, () => { // התחברות לשרת C++ עם פורט ו-IP מהסביבה
+        const message = `User:${userName} ,watchedVideo:${videoId}`;  // יצירת ההודעה
+        console.log(`Sending: ${message} to ${virtualMachineIp}:${socketPort}`);
+        client.write(message);  // שליחת ההודעה לשרת
     });
 
     client.on('data', (data) => {

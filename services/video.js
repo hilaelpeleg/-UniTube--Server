@@ -4,6 +4,10 @@ import Comment from '../models/comment.js';
 import fs from 'fs';
 import path from 'path';
 import net from 'net';
+import customENV from 'custom-env';
+
+// טוען את משתני הסביבה מקובץ env.local
+customENV.env('local');
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
     try {
@@ -186,7 +190,10 @@ export async function getAllVideos() {
 // פונקציה לקבלת הסרטונים המומלצים
 export const getRecommendedVideos = async (username, videoId) => {
     return new Promise((resolve, reject) => {
-        const client = net.createConnection({ port: 5555, host: '192.168.161.129' }, () => {
+        const socketPort = process.env.SOCKET_PORT || 5555; // משתמש ב-SOCKET_PORT מהסביבה או 5555 כברירת מחדל
+        const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // משתמש ב-VIRTUAL_MACHINE_IP או ב-IP לוקלי כברירת מחדל
+
+        const client = net.createConnection({ port: socketPort, host: virtualMachineIp }, () => {
             console.log('Connected to C++ server');
             const message = `recommend:${username}:${videoId}`;
             client.write(message); // שליחת הבקשה לשרת C++
