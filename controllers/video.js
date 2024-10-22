@@ -4,7 +4,13 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import Video from '../models/video.js';
 import net from 'net';
+import customENV from 'custom-env';
 
+// Set the environment explicitly if not already set
+process.env.NODE_ENV = process.env.NODE_ENV || 'local';
+
+// Load environment variables
+customENV.env(process.env.NODE_ENV, "./config");
 
 export async function getVideos(req, res) {
     try {
@@ -28,6 +34,36 @@ export async function getVideos(req, res) {
     }
 }
 
+
+// Controller function for retrieving recommended videos
+const getRecommendedVideos = async (req, res) => {
+    const username = req.params.id;
+    const videoId = Number(req.params.pid); // Convert videoId from the request parameters to a number
+
+    console.log('Received request for recommendations:');
+    console.log('Username:', username);
+    console.log('Video ID:', videoId);
+
+    // Check if username or videoId is missing or invalid
+    if (!username || isNaN(videoId)) {
+        console.error('Missing username or invalid videoId');
+        return res.status(400).json({ error: 'Username and valid videoId are required.' });
+    }
+
+    try {
+        const recommendedVideoIds = await videoServices.getRecommendedVideos(username, videoId);
+        console.log('Recommended Video IDs:', recommendedVideoIds);
+
+        // const videoDetails = await videoServices.getVideoDetails(recommendedVideoIds);
+        // console.log('Recommended video details retrieved successfully:', videoDetails);
+        res.status(200).json(recommendedVideoIds);
+    } catch (error) {
+        console.error('Error retrieving recommended videos:', error);
+        res.status(500).json({ error: 'Failed to retrieve recommended videos' });
+    }
+};
+
+
 export async function getHighestVideoId(req, res) {
     try {
         const highestVideo = await Video.findOne({}, {}, { sort: { id: -1 } }); // Find the latest video by ID
@@ -42,7 +78,13 @@ export async function getHighestVideoId(req, res) {
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
     const userName = req.body.userName || 'guest';
-    console.log(userName);
+
+    // Do not send a message to the C++ server if the user is a guest
+    if (userName === 'guest') {
+        console.log("Guest user; not sending data to C++.");
+        return res.json({ message: "Guest users do not generate views." });
+    }
+
     try {
         const updatedVideo = await videoServices.incrementViewsById(videoId); // Call the service to increment views
 
@@ -60,13 +102,16 @@ export async function incrementVideoViews(req, res) {
     }
 }
 
-function notifyCppServer(userId, videoId) {
-    const client = new net.Socket();  // Create a new TCP socket
+function notifyCppServer(userName, videoId) {
+    const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from the env file or default to 5555
+    const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
 
-    client.connect(5555, '192.168.161.129', () => { // Connect to the C++ server
-        const message = `User ${userId} watched Video ${videoId}`;  // Create message
-        console.log(`Sending: ${message}`);
-        client.write(message);  // Send the message to the server
+    const client = new net.Socket(); // Create a new TCP socket
+
+    client.connect(socketPort, virtualMachineIp, () => { // Connect to the C++ server using port and IP from the environment
+        const message = `User:${userName} ,watchedVideo:${videoId}`;  
+        console.log(`Sending: ${message} to ${virtualMachineIp}:${socketPort}`);
+        client.write(message); 
     });
 
     client.on('data', (data) => {
@@ -335,5 +380,6 @@ export default {
     toggleDislike,
     getHighestVideoId,
     updateVideoDuration,
-    notifyCppServer
+    notifyCppServer,
+    getRecommendedVideos
 };

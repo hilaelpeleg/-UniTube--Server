@@ -3,6 +3,14 @@ import User from '../models/user.js';
 import Comment from '../models/comment.js';
 import fs from 'fs';
 import path from 'path';
+import net from 'net';
+import customENV from 'custom-env';
+
+// Set the environment explicitly if not already set
+process.env.NODE_ENV = process.env.NODE_ENV || 'local';
+
+// Load environment variables
+customENV.env(process.env.NODE_ENV, "./config");
 
 
 export async function createVideoInService(videoId, userName, title, description, url, thumbnailUrl, uploadDate, duration, profilePicture) {
@@ -183,6 +191,93 @@ export async function getAllVideos() {
     }
 }
 
+// Function to get recommended videos
+export const getRecommendedVideos = async (username, videoId) => {
+    return new Promise((resolve, reject) => {
+        const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from environment or default to 5555
+        const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
+
+        // Create a connection to the C++ server
+        const client = net.createConnection({ port: socketPort, host: virtualMachineIp }, () => {
+            console.log('Connected to C++ server');
+            const message = `recommend:${username}:${videoId}`;
+            client.write(message);  // Send the request to the C++ server
+            console.log('Sending request to C++ server:', message);
+        });
+
+        // Handle data received from the server
+        client.on('data', async (data) => {
+            console.log('Received from server:', data.toString());
+            const responseString = data.toString().trim();
+
+            let recommendedVideoIds;
+            try {
+                recommendedVideoIds = JSON.parse(responseString); // Parse the string from the C++ server
+            } catch (error) {
+                console.error('Error parsing server response:', error);
+                return reject(new Error('Failed to parse server response'));
+            }
+
+            // Convert the IDs to numbers
+            recommendedVideoIds = recommendedVideoIds.map(id => Number(id)); 
+            
+            // Print the IDs and their types to verify they are numbers
+            recommendedVideoIds.forEach(id => {
+                console.log(`ID received from C++ server: ${id}, type: ${typeof id}`);
+            });
+
+            // If there are not enough recommended videos, fetch random ones from MongoDB
+            if (!recommendedVideoIds || recommendedVideoIds.length < 6) {
+                console.log('Not enough recommended videos, fetching random videos from MongoDB');
+                const randomVideos = await getRandomVideos(10 - recommendedVideoIds.length); // השלמת רשימה ל-10 סרטונים
+                recommendedVideoIds = [...recommendedVideoIds, ...randomVideos.map(video => video.id)];
+            }
+
+            // Get the video details based on the IDs
+            console.log("please work", recommendedVideoIds);
+            const videoDetails = await getVideoDetails(recommendedVideoIds); 
+            resolve(videoDetails);  // Return the video details to the client
+            client.end();
+        });
+
+        client.on('error', (err) => {
+            console.error('Error connecting to C++ server:', err);
+            reject(err);
+        });
+
+        client.on('end', () => {
+            console.log('Disconnected from C++ server');
+        });
+    });
+};
+
+// Function to fetch random videos from the MongoDB database
+export const getRandomVideos = async (limit) => {
+    try {
+        console.log(`Fetching ${limit} random videos from MongoDB`);
+        const randomVideos = await Video.aggregate([{ $sample: { size: limit } }]); // Fetch random videos using MongoDB's $sample aggregation
+        console.log('Fetched random videos:', randomVideos);
+        return randomVideos;  // Return the fetched random videos
+    } catch (error) {
+        console.error('Error fetching random videos:', error);
+        throw new Error('Failed to fetch random videos');
+    }
+};
+
+// Function to fetch video details based on video IDs
+export const getVideoDetails = async (videoIds) => {
+    try {
+        console.log('Fetching video details for IDs:', videoIds);
+        // Ensure that the `videoIds` are converted to numbers in the query
+        const videos = await Video.find({ id: { $in: videoIds.map(id => Number(id)) } });  // Convert video IDs to numbers in the query
+        console.log('Fetched videos:', videos);
+        return videos; // Return the fetched video details
+    } catch (error) {
+        console.error('Error fetching video details:', error);
+        throw new Error('Failed to fetch video details');
+    }
+};
+
 // Service function to update video likes
 export const updateLikesById = async (videoId, newLikes) => {
     try {
@@ -338,5 +433,8 @@ export default {
     toggleDislike,
     updateVideosProfilePicture,
     deleteVideosByUser,
-    updateVideoDurationInService
+    updateVideoDurationInService,
+    getRecommendedVideos,
+    getVideoDetails,
+    getRandomVideos
 };

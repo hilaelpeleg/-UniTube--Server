@@ -24,4 +24,7 @@ router.post('/:videoId/like', videoController.toggleLike);
 // Route to toggle dislike on a video by video ID
 router.post('/:videoId/dislike', videoController.toggleDislike);
 
+// Route to get recommended videos with username and video ID 
+router.get('/:pid/recommendations/:id', videoController.getRecommendedVideos);
+
 export default router;
