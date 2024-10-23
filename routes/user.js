@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/:id', userController.getUser);
 
+
 // Configure multer for file storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

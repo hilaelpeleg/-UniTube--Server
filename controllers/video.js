@@ -34,6 +34,16 @@ export async function getVideos(req, res) {
     }
 }
 
+export async function getAllVideos(req, res) {
+    try {
+        const videos = await Video.find(); 
+        res.json(videos);
+    } catch (error) {
+        console.error("Error fetching videos:", error);
+        res.status(500).json({ error: 'Failed to fetch videos' });
+    }
+}
+
 
 // Controller function for retrieving recommended videos
 const getRecommendedVideos = async (req, res) => {
@@ -381,5 +391,6 @@ export default {
     getHighestVideoId,
     updateVideoDuration,
     notifyCppServer,
-    getRecommendedVideos
+    getRecommendedVideos,
+    getAllVideos
 };
