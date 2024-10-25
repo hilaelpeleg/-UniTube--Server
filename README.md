@@ -51,6 +51,8 @@ Before running the server, ensure you have the following installed:
     MONGO_URI=your_mongodb_uri
     PORT=your_preferred_port
     JWT_SECRET=your_jwt_secret
+    SOCKET_PORT = your_cpp_server_port (5555 by default)
+    VIRTUAL_MACHINE_IP =your_VM_IP
     ```
 
 ### Running the Server
