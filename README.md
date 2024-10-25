@@ -20,6 +20,7 @@ This project provides the backend server for the UniTube application, a web-base
 - **Comments**: Users can comment on videos, edit or delete their comments, and view others’ comments.
 - **File Uploads**: Users can upload profile pictures and video files, which are handled by Multer and stored on the server.
 - **Update & Delete**: Users can update or delete their profiles, videos, and comments, ensuring full control over their content.
+- **Recommended Videos**: The server retrieves recommended videos by communicating with an external C++ server, which generates video recommendations based on user activity and other metrics. More details about the C++ server can be found [here](https://github.com/OrelShai/-UniTube--Server-cpp).
 
 
 ## Installation and Setup
@@ -32,7 +33,7 @@ Before running the server, ensure you have the following installed:
 ### Installation
 1. Clone the repository:
     ```bash
-    git clone https://https://github.com/hilaelpeleg/-UniTube--Server.git
+    git clone https://github.com/hilaelpeleg/-UniTube--Server.git
     ```
 
 2. Navigate into the project directory:
@@ -50,15 +51,26 @@ Before running the server, ensure you have the following installed:
     MONGO_URI=your_mongodb_uri
     PORT=your_preferred_port
     JWT_SECRET=your_jwt_secret
+    SOCKET_PORT = your_cpp_server_port (5555 by default)
+    VIRTUAL_MACHINE_IP =your_VM_IP
     ```
 
 ### Running the Server
-Once you have set up your environment variables, you can start the server with:
+
+1. **Ensure MongoDB is Running**:
+ Make sure MongoDB is running locally on localhost:27017, with the database named `unitube`. If you are using a remote MongoDB instance, update the `CONNECTION_STRING` variable in your `.env.local` file accordingly.
+
+2. **Run the C++ Server**:
+ Before starting the Node.js server, you need to run the C++ recommendation server on the specified IP (VIRTUAL_MACHINE_IP) to ensure the recommended video feature works. Follow the instructions here to set up and run the C++ server. change the VIRTUAL_MACHINE_IP according to your own IP machine which run the c++ server.
+
+2. **Start the Node.js Server**:
+Once the C++ server is running, and you have set up your environment variables, you can start the server with:
 ```bash
-npm start
+node server.js
 ```
 
-By default, the server will be accessible at `http://localhost:your_port`.
+By default, the server will be accessible at `http://localhost:8200`.
+Make sure your `.env.local` file is properly configured for the environment you're running.
 
 ## Default Data
 When the server is first run, it populates the MongoDB database with default users, videos, and comments. These default records are useful for initial testing and allow the UniTube app to be demonstrated with existing content. The default data is inserted via a script and includes:
