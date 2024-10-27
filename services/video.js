@@ -193,6 +193,7 @@ export async function getAllVideos() {
 
 // Function to get recommended videos
 export const getRecommendedVideos = async (username, videoId) => {
+
     return new Promise((resolve, reject) => {
         const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from environment or default to 5555
         const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
@@ -235,7 +236,7 @@ export const getRecommendedVideos = async (username, videoId) => {
 
             // Limit the list to a maximum of 10 videos
             recommendedVideoIds = recommendedVideoIds.slice(0, 10);
-            
+
             // Get the video details based on the IDs
             console.log("please work", recommendedVideoIds);
             const videoDetails = await getVideoDetails(recommendedVideoIds); 
