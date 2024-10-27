@@ -191,22 +191,6 @@ export async function getAllVideos() {
     }
 }
 
-export async function getTopViewedVideos(excludedVideoID) {
-    try {
-         // Fetch the top 10 most viewed videos from your data source (e.g., database, cache)
-         const topViewedVideos = await Video.find({ id: { $ne: excludedVideoID } }) // Exclude the video with excludedVideoID
-         .sort({ viewCount: -1 })
-         .limit(10);
-        // Print the selected videos
-        console.log('Top viewed videos fetched:', topViewedVideos);
-
-        return topViewedVideos;
-    } catch (error) {
-        console.error('Error fetching top viewed videos:', error);
-        throw error;
-    }
-}
-
 // Function to get recommended videos
 export const getRecommendedVideos = async (username, videoId) => {
 
