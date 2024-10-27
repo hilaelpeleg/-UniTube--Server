@@ -44,15 +44,18 @@ export async function getAllVideos(req, res) {
     }
 }
 
-
 // Controller function for retrieving recommended videos
 const getRecommendedVideos = async (req, res) => {
     const username = req.params.id;
     const videoId = Number(req.params.pid); // Convert videoId from the request parameters to a number
 
-    console.log('Received request for recommendations:');
-    console.log('Username:', username);
-    console.log('Video ID:', videoId);
+    // Do not send a message to the C++ server if the user is a guest
+    if (username === 'guest') {
+        console.log("get top viewed videos (video controller)");
+        // Fetch top 10 most viewed videos from a local data source
+        const topViewedVideos = await videoServices.getTopViewedVideos(videoId);
+        return res.status(200).json(topViewedVideos);
+    }
 
     // Check if username or videoId is missing or invalid
     if (!username || isNaN(videoId)) {
@@ -73,7 +76,6 @@ const getRecommendedVideos = async (req, res) => {
     }
 };
 
-
 export async function getHighestVideoId(req, res) {
     try {
         const highestVideo = await Video.findOne({}, {}, { sort: { id: -1 } }); // Find the latest video by ID
@@ -85,9 +87,12 @@ export async function getHighestVideoId(req, res) {
     }
 }
 
+
 export async function incrementVideoViews(req, res) {
     const videoId = req.params.pid; // Get the ID from the params
     const userName = req.body.userName || 'guest';
+
+    console.log(`Video ID: ${videoId}, User Name: ${userName}`);
 
     // Do not send a message to the C++ server if the user is a guest
     if (userName === 'guest') {
@@ -113,10 +118,13 @@ export async function incrementVideoViews(req, res) {
 }
 
 function notifyCppServer(userName, videoId) {
+
     const socketPort = process.env.SOCKET_PORT || 5555; // Use SOCKET_PORT from the env file or default to 5555
     const virtualMachineIp = process.env.VIRTUAL_MACHINE_IP || '127.0.0.1'; // Use VIRTUAL_MACHINE_IP or default to local IP
 
     const client = new net.Socket(); // Create a new TCP socket
+
+    console.log(`Attempting to connect to C++ server at ${virtualMachineIp}:${socketPort}...`);
 
     client.connect(socketPort, virtualMachineIp, () => { // Connect to the C++ server using port and IP from the environment
         const message = `User:${userName} ,watchedVideo:${videoId}`;  
@@ -137,7 +145,6 @@ function notifyCppServer(userName, videoId) {
         console.error('Error: ' + err.message);
     });
 }
-
 
 export async function createVideo(req, res) {
     try {
