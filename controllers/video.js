@@ -54,6 +54,14 @@ const getRecommendedVideos = async (req, res) => {
     console.log('Username:', username);
     console.log('Video ID:', videoId);
 
+        // Do not send a message to the C++ server if the user is a guest
+        if (username === 'guest') {
+            console.log("get top viewed videos (video controller)");
+            // Fetch top 10 most viewed videos from a local data source
+            const topViewedVideos = await videoServices.getTopViewedVideos(videoId);
+            return res.status(200).json(topViewedVideos);
+        }
+        
     // Check if username or videoId is missing or invalid
     if (!username || isNaN(videoId)) {
         console.error('Missing username or invalid videoId');
