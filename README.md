@@ -108,13 +108,14 @@ Defines the API endpoints that the client app interacts with. Routes are divided
 Multer is used to manage file uploads, including:
 - **Profile Pictures**: Users can upload or update their profile pictures. These images are stored locally on the server, and their file paths are saved in MongoDB for later retrieval.
 - **Videos**: When users upload video files, they are also stored on the server, and the metadata is saved in MongoDB for efficient querying and access.
+- **Video Thumbnails**: Each video has an associated thumbnail image that visually represents the video. These thumbnails are also managed by Multer, stored on the server, and referenced in the app’s video displays for quick previewing.
 
 ### Storage
 Uploaded files are stored on the server in designated directories:
 - **Profile Pictures**: Stored in `/uploads/profile_pictures`.
 - **Videos**: Stored in `/uploads/videos`.
 The file paths for these uploaded files are then stored in the database to be referenced when displaying user profiles or videos within the app.
-
+- **Thumbnails**: Stored in /public/thumbnailUrl. These thumbnails are used as video previews and make it easy for users to quickly identify content in the app.
 
 ## Additional Packages
 The following key packages are used in the project:
