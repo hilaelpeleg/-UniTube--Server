@@ -112,7 +112,7 @@ Multer is used to manage file uploads, including:
 
 ### Storage
 Uploaded files are stored on the server in designated directories:
-- **Profile Pictures**: Stored in `/public/profile_pictures`.
+- **Profile Pictures**: Stored in `/public/profiles`.
 - **Videos**: Stored in `/public/videos`.
 - **Thumbnails**: Stored in `/public/thumbnailUrl`. These thumbnails are used as video previews and make it easy for users to quickly identify content in the app.
 This setup ensures organized storage and efficient access to media files, with paths stored in MongoDB to streamline retrieval and display within the app.
