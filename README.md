@@ -87,7 +87,8 @@ The server follows the MVC (Model-View-Controller) architecture to ensure modula
 - **User**: Stores user information like first and last name, username, profile picture, and password.
 - **Video**: Stores video information such as title, description, file path, and associated username.
 - **Comment**: Manages comments for each video, storing the user who made the comment and the comment text.
-
+- **Token**: Manages authentication tokens by generating and storing JWT tokens associated with user sessions. These tokens are used to authenticate users and verify permissions for accessing protected routes securely.
+  
 ### Controllers
 Handle incoming HTTP requests, process the data, and return responses to the client. These contain the business logic for operations such as creating a user, uploading a video, or adding a comment and more features as update and delete.
 
@@ -100,6 +101,8 @@ Defines the API endpoints that the client app interacts with. Routes are divided
                 Users can also upload and manage their videos via this route (create, edit, delete videos).
 - `/api/videos`: For fetching all videos, managing individual videos (including uploading, editing, and deleting videos), and updating video metadata such as likes, dislikes, and views.
 - `/api/comments`: For managing comments on videos. Users can add, edit, and delete comments on specific videos.
+- `/api/tokens`: Manages user sessions by generating and verifying JWT tokens. This route ensures that only authenticated users can access protected features by issuing tokens during login and verifying them for each request to secure routes.
+
 
 ## File Upload Handling with Multer
 Multer is used to manage file uploads, including:
